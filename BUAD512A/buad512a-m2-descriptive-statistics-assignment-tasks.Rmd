@@ -1,0 +1,141 @@
+---
+title: "Module2RHW"
+author: "Danni Martin"
+date: "January 15, 2024"
+output: 
+  pdf_document: 
+    toc: true
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, tidy.opts = list(width.cutoff = 70), tidy = TRUE)
+```
+
+
+# Task 0 
+* Complete the following tasks and ensure your completed code to each question is copied into this .Rmd file into the appropriate R chunk, and that your final file is knitted into a .pdf document as already set up in this document. Leave the labels and instructions for each task. Include your name and date under the section above in quotations.
+
+* Knit this assessment from a .Rmd file to .pdf file.
+* Ensure your code requested to generate an answer is executable and not in comments. You should comment to explain your code and your answer. You may also copy the question into your R chunk and comment it out to improve readability. 
+* Do not include code that you don’t need outside of the assignment. This includes not printing out any complete data frames or data sets and variable values that are not explicitly asked for.
+* Proof read your submission to make sure you have included all files.
+* Ensure sure your assessment has been checked for readability. Add comments where necessary to improve readability. 
+* Always refer to file locations, paths, or directories relatively by putting a datasets in a data folder in your working directory and using "data/....csv" inside any read data lines of code. This means there should be no setwd() commands inside your .Rmd file.
+* Do not alter any data sets at all (e.g. remove extraneous rows or columns, change certain values manually, or rename files) prior to uploading in R.
+* Include required libraries and links to datasets where necessary.
+
+* Files that do not follow Task 0 will get points deducted from the top of the assignment. 
+
+
+## Resources Required
+* Datasets: module2.csv from Canvas
+* Libraries: tidyverse and semTools 
+
+
+
+# Task 1 Subsetting and Proportions
+* Q1: Download the dataset module2.csv into a data folder in your working directory from Blackboard. Load this dataset into R using relative paths. Save this object as prices and summarize the dataset using a summary() command. 
+* Q1a: Create an object Q1a that filters _Form_ when it has the category value of "Canned". Print the head of Q1a in R. 
+* Q1b: Calculate the frequencies of the _Form_ variable, which the form of the fruit and vegetables (i.e., Canned, Dried, Fresh, etc.). Save your completed function in a variable called Q1b. Print the contents of Q1b.
+* Q1c: Compute the relative frequencies of the _Form_ variable and output the information as decimal values using a function. Save your completed function in a variable called Q1c. Print the contents of Q1c.
+```{r} 
+# Download the dataset module2.csv into a data folder in your working directory from Blackboard. Load this dataset into R using relative paths. Save this object as prices and summarize the dataset using a summary() command. 
+
+# Load libraries. *Apologies if this is redundant. Adding the libraries to the Rmarkdown code fixed "head()" error. 
+library(tidyverse)
+library(semTools)
+
+# Load dataset
+prices <- read.csv(file = "data/module2.csv", stringsAsFactors = TRUE)
+
+# Summarize dataset
+summary(prices)
+
+# Q1a: Create an object Q1a that filters _Form_ when it has the category value of "Canned". Print the head of Q1a in R.
+
+# Create Q1a
+Q1a <- filter(prices, prices$Form == "Canned")
+
+# Print head
+head(Q1a)
+
+# Q1b: Calculate the frequencies of the _Form_ variable, which the form of the fruit and vegetables (i.e., Canned, Dried, Fresh, etc.). Save your completed function in a variable called Q1b. Print the contents of Q1b.
+( Q1b <- table(prices$Form))
+
+
+# Q1c: Compute the relative frequencies of the _Form_ variable and output the information as decimal values using a function. Save your completed function in a variable called Q1c. Print the contents of Q1c.
+(Q1c <- prop.table(Q1b))
+
+```
+
+# Task 2 Central Tendency: RetailPrice
+* Calculate the three types of central tendency: 1) mean, 2) median, and 3) mode for the RetailPrice variable. Save your numerical answers as Q2a (mean), Q2b (median), and Q2c (mode). You may save the function directly into Q2a and Q2b for mean and median, but write a number answer for mode, or if there is no mode, save "no mode" in quotes into the variable. Print the contents of Q2a, Q2b, and Q2c.
+
+```{r}
+# Q2a - mean
+(Q2a <- mean(prices$RetailPrice))
+
+# Q2b - median
+(Q2b <- median(prices$RetailPrice))
+
+# Q2c - mode
+# Mode function, produces value .3604
+names(x = sort(x = table(prices$RetailPrice), decreasing = TRUE)) [1]
+# Verify mode
+table(prices$RetailPrice)
+# Print Q2c. No repeating values; therefore, no mode exists. 
+(Q2c = "No mode")
+```
+
+
+## Task 3 Spread with Report to the Mean: RetailPrice
+* Give the spread with report to the mean of the RetailPrice variable, including functions that calculate the variance, standard deviation, and kurtosis, saving your answers as Q3a (variance), Q3b (standard deviation). 
+* Evaluate skewness of the RetailPrice variable visually with a histogram, and using the skew() command saving the skew function as Q3c. In comments, list the z-value provided in the skew() command and suggest whether this indicates that the data is normal, right-skewed, or left-skewed. Provide a rationale as to why. 
+* Evaluate kurtosis of the RetailPrice variable using the kurtosis() command and save the kurtosis function as Q3d.  In comments, list the z-value provided in the kurtosis() command and suggest whether this indicates that the data is normal, problematic for leptokurtic, or problematic for platykurtic. Provide a rationale as to why. 
+Print the contents of Q3a, Q3b, Q3c, and Q3d. 
+     
+```{r}
+# Give the spread with report to the mean of the RetailPrice variable, including functions that calculate the variance, standard deviation, and kurtosis, saving your answers as Q3a (variance), Q3b (standard deviation).
+Q3a <- var(prices$RetailPrice)
+Q3b <- sd(prices$RetailPrice)
+kurtosis(prices$RetailPrice)
+
+# Evaluate skewness of the RetailPrice variable visually with a histogram, and using the skew() command saving the skew function as Q3c. In comments, list the z-value provided in the skew() command and suggest whether this indicates that the data is normal, right-skewed, or left-skewed. Provide a rationale as to why. 
+
+# Histogram - Confounding variable(s) in $10-12 range skewing data to the right. 
+hist(prices$RetailPrice)
+
+# Save skew function as Q3c. Z-value = 4.878113. Data is right-skewed. Given the sample size, the z-value is positive and too large (>3.29) for $RetailPrice to be treated as normally distributed. 
+(Q3c <- skew(prices$RetailPrice))
+
+# Evaluate kurtosis of the RetailPrice variable using the kurtosis() command and save the kurtosis function as Q3d.  In comments, list the z-value provided in the kurtosis() command and suggest whether this indicates that the data is normal, problematic for leptokurtic, or problematic for platykurtic. Provide a rationale as to why. Print the contents of Q3a, Q3b, Q3c, and Q3d. 
+# Save as kurtosis function as Q3d.
+
+# Q3d - kurtosis function.  Z-value = 4.001036.The distribution is leptokurtic, as evident by the positive Excess Kur value. The z-value is above 3.29 and is problematic for the leptokurtic distribution.
+Q3d <- kurtosis(prices$RetailPrice)
+# Print Q3a (variance)
+Q3a
+# Print Q3b (standard deviation)
+Q3b
+# Print Q3c (skew)
+Q3c
+# Print Q3d (kurtosis)
+Q3d
+
+```
+ 
+
+## Task 4 Spread with Report to the Median: RetailPrice
+* Give the spread with report to the median for the RetailPrice variable, including the calculated range value in dollars, and the IQR. Save your answers as Q4a (range value), and Q4b (IQR). Print the contents of Q4a and Q4b. 
+
+```{r}
+# Give the spread with report to the median for the RetailPrice variable, including the calculated range value in dollars, and the IQR. Save your answers as Q4a (range value), and Q4b (IQR). Print the contents of Q4a and Q4b.
+
+# Q4a - range, in dollars (rounded)
+(Q4a <- round(range((prices$RetailPrice)),2))
+
+#Q4b - IQR
+(Q4b <- IQR(prices$RetailPrice))
+
+```
+     
+     

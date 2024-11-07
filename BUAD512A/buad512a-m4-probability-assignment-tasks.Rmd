@@ -1,0 +1,181 @@
+---
+title: "Module4RHW"
+author: "Danni Martin"
+date: "January 29, 2024"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, tidy.opts = list(width.cutoff = 70), tidy = TRUE)
+```
+
+# Task 0 
+* Complete the following tasks and ensure your completed code to each question is copied into this .Rmd file into the appropriate R chunk, and that your final file is knitted into a .pdf document as already set up in this document. Leave the labels and instructions for each task. Include your name and date under the section above in quotations.
+
+* Knit this assessment from a .Rmd file to .pdf file.
+* Ensure your code requested to generate an answer is executable and not in comments. You should comment to explain your code and your answer. You may also copy the question into your R chunk and comment it out to improve readability. 
+* Do not include code that you don’t need outside of the assignment. This includes not printing out any complete data frames or data sets and variable values that are not explicitly asked for.
+* Proof read your submission to make sure you have included all files.
+* Ensure sure your assessment has been checked for readability. Add comments where necessary to improve readability. 
+* Always refer to file locations, paths, or directories relatively by putting a datasets in a data folder in your working directory and using "data/....csv" inside any read data lines of code. This means there should be no setwd() commands inside your .Rmd file.
+* Do not alter any data sets at all (e.g. remove extraneous rows or columns, change certain values manually, or rename files) prior to uploading in R.
+* Include required libraries and links to datasets where necessary.
+
+* Files that do not follow Task 0 will get points deducted from the top of the assignment. 
+
+
+ 
+## Resources Required
+* Datasets: The anscombe dataset from R
+* Libraries: tidyverse, gridExtra
+
+# Task 1   
+* The anscombe data set serves as a reminder of how important plotting is. (See help on anscombe for information on the dataset). Load the anscombe data set. 
+* Use ggplot2 to make 4 separate plots of the four data series (x,y)1..4 and save these plots as plot1 ...plot4. Each of these four plots has similar mean, correlation, standard deviation, and other summary measures, however, the data is not the same. Ensure the points are visible, and that there is a linear method stat_smooth in each graph. 
+* Produce a 2 by 2 plot of all 4 graphs. 
+* In comments, share what you learned from the graphs in terms of the relationships between variables as compared to the regression line. 
+```{r} 
+# Task 0 -
+# Load libraries
+library(tidyverse)
+library(gridExtra)
+
+
+# Task 1 - The anscombe data set serves as a reminder of how important plotting is. (See help on anscombe for information on the dataset). Load the anscombe data set. 
+data("anscombe")
+
+# Use ggplot2 to make 4 separate plots of the four data series (x,y)1..4 and save these plots as plot1 ...plot4. Each of these four plots has similar mean, correlation, standard deviation, and other summary measures, however, the data is not the same. Ensure the points are visible, and that there is a linear method stat_smooth in each graph.
+
+plot1 <- anscombe %>%
+  ggplot(aes(x = x1,y = y1)) + geom_point() + stat_smooth(method = "lm")
+
+plot2 <- anscombe %>%
+  ggplot(aes(x = x2,y = y2)) + geom_point() + stat_smooth(method = "lm")
+
+plot3 <- anscombe %>%
+  ggplot(aes(x = x3,y = y3)) + geom_point() + stat_smooth(method = "lm")
+
+plot4 <- anscombe %>%
+  ggplot(aes(x = x4,y = y4)) + geom_point() + stat_smooth(method = "lm")
+
+# Produce a 2 by 2 plot of all 4 graphs. 
+gridExtra::grid.arrange(plot1, plot2, plot3, plot4, nrow=2)
+
+# In comments, share what you learned from the graphs in terms of the relationships between variables as compared to the regression line. 
+
+#Even though these plots share nearly identical summary metrics, graphing the data reveals unique patterns and outliers. This example highlights the importance of visual analysis for meaningful data interpretation, as summary statistics alone may be misleading. 
+
+```
+
+# Task 2   
+* At a local community college, 35% of students who enter the college as freshmen go on to graduate. Fifteen freshmen are randomly selected.
+  + 2A: What is the probability that none of them graduates from the local community college? 
+  + 2B: What is the probability that exactly 6 will graduate from the local community college? 
+  + 2C: What is the probability that exactly 3 will graduate from the local community college? 
+```{r} 
+# Task 2 - At a local community college, 35% of students who enter the college as freshmen go on to graduate. Fifteen freshmen are randomly selected.
+# 2A: What is the probability that none of them graduates from the local community college?
+dbinom(0,15,.35)
+
+# 2B: What is the probability that exactly 6 will graduate from the local community college?
+dbinom(6,15,.35)
+
+# 2C: What is the probability that exactly 3 will graduate from the local community college?
+dbinom(3,15,.35)
+
+```
+
+# Task 3  
+* Let X represent a binomial random variable with n = 110 and p = 0.38. Find the following probabilities.
+  + 3A: P(X <= 40) 
+  + 3B: P(X > 35)  
+  + 3C: P(X >= 45) 
+```{r} 
+# Task 3 - Let X represent a binomial random variable with n = 110 and p = 0.38. Find the following probabilities.
+
+# 3A: P(X <= 40) 
+pbinom(40,110,.38)
+
+# 3B: P(X > 35) 
+pbinom(35,110,.38, lower.tail = FALSE)
+
+# 3C: P(X >= 45)
+pbinom(44,110,.38, lower.tail = FALSE)
+
+```
+
+
+# Task 4  
+* In a rural town, the average high school teacher annual salary is 41,000 dollars. Let salary be normally distributed with a standard deviation of 12,000 dollars.
+  + 4A: What percentage of high school teachers make less than 43,000 dollars? 
+  + 4B: What percentage of high school teachers make more than 60,000 dollars? 
+  + 4C: What percentage of high school teachers make between 40,000 and 50,000 dollars? 
+```{r} 
+# Task 4 - In a rural town, the average high school teacher annual salary is 41,000 dollars. Let salary be normally distributed with a standard deviation of 12,000 dollars.
+
+# 4A: What percentage of high school teachers make less than 43,000 dollars? 57%
+pnorm(43000,41000,12000)
+
+# 4B: What percentage of high school teachers make more than 60,000 dollars? 5.7%
+pnorm(60000,41000,12000, lower.tail = FALSE)
+
+# 4C: What percentage of high school teachers make between 40,000 and 50,000 dollars? 31%
+pnorm(50000,41000,12000) - pnorm(40000,41000,12000)
+
+
+```
+
+
+# Task 5 
+* 5A: Find the z value such that $P(Z <= z)$ = 0.9182, given a mean of 0 and a standard deviation of 1. 
+* 5B: Let X be normally distributed with mean $\mu$ = 250 and standard deviation $\sigma$ = 80. What is the value of x such that $P(X <= x)$ = 0.9254? 
+* 5C: The price of a particular asset has a mean and standard deviation of 150 dollars and 9 dollars, respectively. What is the 65th percentile of this price? 
+```{r} 
+# Task 5
+
+# 5A: Find the z value such that $P(Z <= z)$ = 0.9182, given a mean of 0 and a standard deviation of 1. 
+qnorm(.9182)
+
+
+# 5B: Let X be normally distributed with mean $\mu$ = 250 and standard deviation $\sigma$ = 80. What is the value of x such that $P(X <= x)$ = 0.9254? 
+qnorm(.9254,250,80)
+
+
+# 5C: The price of a particular asset has a mean and standard deviation of 150 dollars and 9 dollars, respectively. What is the 65th percentile of this price? 1
+qnorm(.65,150,9)
+
+```
+
+# Task 6  
+
+* In the following table, consumers reported whether they got snacks or not based on the type of movie. 
+```{r, echo=FALSE}
+Type_of_Movie <- c("Action", "Comedy", "Family", "Horror")
+Snacks <- c(81, 125, 112, 109)
+No_Snacks <- c(108, 75, 102, 75)
+Movie <- data.frame(Type_of_Movie, Snacks, No_Snacks)
+Movie
+```
+
+* Conduct a test that confirms whether  movie type and snack preference are independent. In doing so, comment on the following: 
+  + Name the Test
+  + Step 1: Set up the hypothesis.
+  + Step 2 and 3: Compute the test statistic and calculate the probability.
+  + Steps 4 and 5: Confirm whether you reject or fail to reject the null and state what that means.
+```{r}
+# Conduct a test that confirms whether  movie type and snack preference are independent. In doing so, comment on the following: 
+# Name the Test
+# Chi-squared Test for Movie Type and Snack Consumption
+
+# Step 1: Set up the hypothesis.
+#H0: Movie type and consumer snack consumption are independent.
+#HA: Movie type and consumer snack consumption are dependent.
+
+# Step 2 and 3: Compute the test statistic and calculate the probability.
+chisq.test(Movie[,2:3])
+
+# Steps 4 and 5: Confirm whether you reject or fail to reject the null and state what that means.
+# The p value is less than 0.05; therefore, we reject the null hypothesis and conclude that movie type does influence consumer snack consumption. 
+
+```
+

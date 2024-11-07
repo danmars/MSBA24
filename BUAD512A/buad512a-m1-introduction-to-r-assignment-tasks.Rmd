@@ -1,0 +1,153 @@
+---
+title: "Module1RHW"
+author: "Danni Martin"
+date: "January 8, 2024"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, tidy.opts = list(width.cutoff = 70), tidy = TRUE)
+```
+
+
+# Task 0
+* Complete the following tasks and ensure your completed code to each question is copied into this .Rmd file into the appropriate R chunk, and that your final file is knitted into a .pdf document as already set up in this document. Leave the labels and instructions for each task. Include your name and date under the section above in quotations.
+
+* Knit this assessment from a .Rmd file to .pdf file.
+* Ensure your code requested to generate an answer is executable and not in comments. You should comment to explain your code and your answer. You may also copy the question into your R chunk and comment it out to improve readability. 
+* Do not include code that you don’t need outside of the assignment. This includes not printing out any complete data frames or data sets and variable values that are not explicitly asked for.
+* Proof read your submission to make sure you have included all files.
+* Ensure sure your assessment has been checked for readability. Add comments where necessary to improve readability. 
+* Always refer to file locations, paths, or directories relatively by putting a datasets in a data folder in your working directory and using "data/....csv" inside any read data lines of code. This means there should be no setwd() commands inside your .Rmd file.
+* Do not alter any data sets at all (e.g. remove extraneous rows or columns, change certain values manually, or rename files) prior to uploading in R.
+
+
+## Resources Required
+* Datasets: module1.csv from Canvas
+* Libraries: optional (tidyverse)
+
+# Task 1 
+* 1A. Create a dataframe named healthScreening from three new variables: name, age, and covidResult. Have each variable include 3 values:
+  + name: Patient1...Patient3
+  + age: 18, 21, 23
+  + covidResult: Negative, Positive, and Negative
+* 1B. Inside your new dataset, ensure your name variable is a character, your age variable is a number, and your covidResult variable is a factor. 
+* 1C. Summarize your dataframe using a summary() function. 
+
+
+```{r} 
+# 1A. Create a dataframe named healthScreening from three new variables: name, age, and covidResult.
+name <- c("Patient1", "Patient2", "Patient3")
+age <- c(18, 21, 23)
+covidResult <- c("Negative", "Positive", "Negative")
+
+# combine vectors and name data frame
+healthScreening <- data.frame(name, age, covidResult)
+
+# 1B. Inside your new dataset, ensure your name variable is a character, your age variable is a number, and your covidResult variable is a factor.
+class(x = name)
+class(x = age)
+class(x = covidResult)
+
+# change covidResult to factor and check again
+healthScreening$covidResult <- as.factor(x = covidResult)
+class(x = healthScreening$covidResult)
+
+# 1C. Summarize your dataframe using a summary() function. 
+summary(object = healthScreening)
+
+```
+
+# Task 2
+* 2A. Create a vector Q2a that includes the following 10 numbers: 92, 66, 31, 67, 37, 65, 13, 86, 72, 29. 
+* 2B. Calculate the maximum value of Q2a and save your function as a variable Q2b. Print the contents of Q2b. 
+* 2C. Calculate the minimum value of Q2a and save your function as a variable Q2c. Print the contents of Q2c. 
+* 2D. Sort Q2a from low to high and save your sorted function as Q2d. Print the contents of Q2d. 
+* 2E. Write and R command to compute $10-40*(1-\frac{0.35}{15})^{4}$ and save your formula, which contains your answer, in an object called Q2e. Please note to knit the file to pdf to view the formula in common formatting. Print the contents of Q2e. 
+* 2F. Use the seq function to create a vector that has the following element:  0  4  8 12 16 20 24 28 32 36 40. Save the sequence function, which contains your answer, as Q2f. Print the contents of Q2f. 
+
+```{r} 
+# 2A. Create a vector Q2a that includes the following 10 numbers: 92, 66, 31, 67, 37, 65, 13, 86, 72, 29.
+Q2a <- c(92, 66, 31, 67, 37, 65, 13, 86, 72, 29)
+
+# 2B. Calculate the maximum value of Q2a and save your function as a variable Q2b. Print the contents of Q2b. 
+( Q2b <- max(Q2a) )
+
+# 2C. Calculate the minimum value of Q2a and save your function as a variable Q2c. Print the contents of Q2c. 
+( Q2c <- min(Q2a) )
+
+# 2D. Sort Q2a from low to high and save your sorted function as Q2d. Print the contents of Q2d.
+( Q2d <- sort(Q2a) )
+
+# 2E. Write and R command to compute $10-40*(1-\frac{0.35}{15})^{4}$ and save your formula, which contains your answer, in an object called Q2e. Please note to knit the file to pdf to view the formula in common formatting. Print the contents of Q2e.
+( Q2e <- 10-40*(1-(.35/15))^4 )
+
+# 2F. Use the seq function to create a vector that has the following element:  0  4  8 12 16 20 24 28 32 36 40. Save the sequence function, which contains your answer, as Q2f. Print the contents of Q2f.
+( Q2f <- seq(0, 40, 4) )
+
+```
+
+
+# Task 3 
+
+* Download the module1.csv data set from Canvas. Use the read.csv function to load the dataset from a data folder inside your working directory. This dataset contains job salaries from data scientists in 2023.
+     + work_year: The year the salary was paid.
+     + experience_level: The experience level in the job during the year
+     + employment_type: The type of employment for the role
+     + job_title: The role worked in during the year.
+     + salary: The total gross salary amount paid.
+     + salary_currency: The currency of the salary paid as an ISO 4217 currency code.
+     + salaryinusd: The salary in USD
+     + employee_residence: Employee's primary country of residence in during the work year as an ISO 3166 country code.
+     + remote_ratio: The overall amount of work done remotely
+     + company_location: The country of the employer's main office or contracting branch
+     + company_size: The median number of people that worked for the company during the year
+
+* For each problem below, make sure your answer is shown in code and commented with a statement of what you found. 
+* Q3a. Use a function to calculate the mean of the salary_in_usd variable. Save the function as Q3a and print the contents of Q3a.
+* Q3b. Use a function to produce the number of observations in the dataset. Save the function as Q3b and print the contents of Q3b.
+* Q3c. Use a function to omit the NA's from the entire data set and save this in a new data object called Q3c. 
+* Q3d. Use a function to produce the number of observations in the Q3c data set after all missing data. Save the function as Q3d and print the contents of Q3d. Tell in comments how many observations were deleted. 
+* Q3e: Using the Q3c object, use a function to calculate the number of people whose salary_in_usd was greater than 120,000. Save the function as Q3e and print the contents of Q3e.
+* Q3f: Using the Q3c object, use a function to calculate the number of people who has the job_title listed as "Data Engineer" and save your answer as a variable called Q3f. Print the contents of Q3f.
+* Q3g: Using the Q3c object, use a function to arrange the entire data set from highest to lowest using salary_in_usd as the sorted variable. Save your new sorted dataset in an object called Q3g. In comments, list the job title of the role with the highest salary. 
+
+```{r} 
+# Download the module1.csv data set from Canvas. Use the read.csv function to load the dataset from a data folder inside your working directory.
+
+module1 <- read.csv(file = "data/module1.csv")
+
+# Q3a. Use a function to calculate the mean of the salary_in_usd variable. Save the function as Q3a and print the contents of Q3a.
+
+( Q3a <- mean(module1$salary_in_usd, na.rm = TRUE) )
+
+# Q3b. Use a function to produce the number of observations in the dataset. Save the function as Q3b and print the contents of Q3b.
+
+( Q3b <- nrow(module1) )
+
+# Q3c. Use a function to omit the NA's from the entire data set and save this in a new data object called Q3c. 
+
+Q3c <- na.omit(module1)
+
+# Q3d. Use a function to produce the number of observations in the Q3c data set after all missing data. Save the function as Q3d and print the contents of Q3d. Tell in comments how many observations were deleted.
+# 11 observations were deleted.
+
+( Q3d <- nrow(Q3c) )
+
+
+# Q3e: Using the Q3c object, use a function to calculate the number of people whose salary_in_usd was greater than 120,000. Save the function as Q3e and print the contents of Q3e.
+
+( Q3e <- length(which(Q3c$salary_in_usd > 120000)) )
+
+# Q3f: Using the Q3c object, use a function to calculate the number of people who has the job_title listed as "Data Engineer" and save your answer as a variable called Q3f. Print the contents of Q3f.
+
+( Q3f <- length(which(Q3c$job_title == "Data Engineer")) )
+
+# Q3g: Using the Q3c object, use a function to arrange the entire data set from highest to lowest using salary_in_usd as the sorted variable. Save your new sorted dataset in an object called Q3g. In comments, list the job title of the role with the highest salary.
+
+Q3g <- Q3c[order(Q3c$salary_in_usd, decreasing = TRUE), ]
+
+# Job title with highest salary = AI Scientist
+
+```
+

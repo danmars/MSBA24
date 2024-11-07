@@ -1,0 +1,223 @@
+---
+title: "Module5RHW"
+author: "Danni Martin"
+date: "February 5, 2024"
+output: pdf_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, tidy.opts = list(width.cutoff = 70), tidy = TRUE)
+```
+
+# Task 0
+* Complete the following tasks and ensure your completed code to each question is copied into this .Rmd file into the appropriate R chunk, and that your final file is knitted into a .pdf document as already set up in this document. Leave the labels and instructions for each task. Include your name and date under the section above in quotations.
+
+* Knit this assessment from a .Rmd file to .pdf file.
+* Ensure your code requested to generate an answer is executable and not in comments. You should comment to explain your code and your answer. You may also copy the question into your R chunk and comment it out to improve readability. 
+* Do not include code that you don’t need outside of the assignment. This includes not printing out any complete data frames or data sets and variable values that are not explicitly asked for.
+* Proof read your submission to make sure you have included all files.
+* Ensure sure your assessment has been checked for readability. Add comments where necessary to improve readability. 
+* Always refer to file locations, paths, or directories relatively by putting a datasets in a data folder in your working directory and using "data/....csv" inside any read data lines of code. This means there should be no setwd() commands inside your .Rmd file.
+* Do not alter any data sets at all (e.g. remove extraneous rows or columns, change certain values manually, or rename files) prior to uploading in R.
+* Files that do not follow Task 0 will get points deducted from the top of the assignment. 
+
+
+  
+## Resources Required
+* Datasets: module5a.csv, module5b.csv, module5c.csv, and module5d.csv from Canvas
+* Libraries: NA 
+
+## Set all alpha levels in this assignment to .05 and that all data with smaller samples sizes are taken from a normal distribution. 
+
+
+# Task 1
+* Load the module5a.csv data set after downloading it from Canvas into a data file in your working directory. Name this dataset data. The data set shows data on alcohol consumption from 395 students with a number of other variables. 
+
+* Admin is interested in whether the final grades (Variable: G3) is greater than a score of 10. 
+
+* Execute Steps 1 - 5 and document where needed in comments:
+  + Step 1: Specify the null and the alternative hypotheses for the test. 
+  + Step 2 and 3: Run a command in R. 
+  + Steps 4 and 5: Interpret probability and results. 
+
+```{r} 
+# Task 1
+# Load the module5a.csv data set after downloading it from Canvas into a data file in your working directory. Name this dataset data. The data set shows data on alcohol consumption from 395 students with a number of other variables. 
+data <- read.csv(file = "data/module5a.csv", stringsAsFactors = TRUE)
+
+# Step 1: Specify the null and the alternative hypotheses for the test.
+
+# H0: Final grades are less than or equal to ten.
+
+# HA: Final grades are greater than 10.
+
+# Step 2 and 3: Run a command in R.
+t.test(data$G3, mu = 10, alternative = "greater")
+
+# Steps 4 and 5: Interpret probability and results.
+# Our test statistic is 1.8011 with a corresponding p-value of .03622. Our p-value is smaller than our alpha, .05; therefore, we reject the null hypothesis (H0) and support the alternative (HA). The mean of final grades is greater than 10. 
+
+```
+
+# Task 2
+* Using the module5a dataset, run the t.test command in R to test whether the weekend alcohol consumption (Walc) is different for students who want to take on higher education (Variable: higher). 
+* Execute Steps 1 - 5 and document where needed in comments:
+  + Step 1: Specify the null and the alternative hypotheses for the test. 
+  + Step 2 and 3: Run a command in R. 
+  + Steps 4 and 5: Interpret probability and results. 
+```{r}
+# Task 2
+# Using the module5a dataset, run the t.test command in R to test whether the weekend alcohol consumption (Walc) is different for students who want to take on higher education (Variable: higher).
+
+# Step 1: Specify the null and the alternative hypotheses for the test.
+
+# H0: Weekend alcohol consumption does not differ for students who want to pursue higher education and those who do not want to pursue higher education.
+
+# HA: Weekend alcohol consumption differs for students who want to pursue higher education and those who do not want to pursue higher education.
+
+# Step 2 and 3: Run a command in R.
+t.test(data$Walc~data$higher)
+
+# Steps 4 and 5: Interpret probability and results.
+# Our test statistic is 1.5593 with a corresponding p-value of .1345. Our p-value is greater than our alpha, .05; therefore, we retain the null hypothesis (H0) and cannot support the alternative (HA). Test is not significant.
+
+```
+
+
+
+# Task 3
+* Using the module5a dataset, run the t.test command in R to test whether the grades declined from G1 to G3. 
+* Using the formula of G3-G1, execute Steps 1 - 5 and document where needed in comments:
+  + Step 1: Specify the null and the alternative hypotheses for the test. 
+  + Step 2 and 3: Run a command in R. 
+  + Steps 4 and 5: Interpret probability and results.
+
+```{r} 
+# Task 3
+# Using the module5a dataset, run the t.test command in R to test whether the grades declined from G1 to G3. 
+
+# Step 1: Specify the null and the alternative hypotheses for the test. 
+
+# H0: G3 is equal or greater than G1.
+
+# HA: G3 is less than G1.
+
+# Step 2 and 3: Run a command in R. 
+t.test(data$G3, data$G1, paired = TRUE, alternative = "less")
+
+# Steps 4 and 5: Interpret probability and results.
+# Our test statistic is -3.5517 with a corresponding p-value of .0002145. Our p-value is smaller than our alpha, .05; therefore, we reject the null hypothesis (H0) and support the alternative (HA).Grades declined from G1 to G3.
+
+```
+
+# Task 4
+* Load the module5b.csv data set after downloading it from Canvas into a data file in your working directory. According to a report, overweight people on low carbohydrate diets lost more weight and got greater cardiovascular benefits than people on a conventional low-fat diet. A nutritionist wishes to verify these results and documents the weight loss (in pounds) of 30 dieters on the low carbohydrate diet and 30 dieters on the low-fat diet.  Let Sample 1 be the sample of Low-carb dieters and Sample 2 be the sample of the Low-fat dieters. 
+* Execute Steps 1 - 5 and document where needed in comments:
+  + Step 1: Specify the null and the alternative hypotheses for the test. 
+  + Step 2 and 3: Run a command in R. 
+  + Steps 4 and 5: Interpret probability and results. 
+
+```{r} 
+# Task 4
+# Load the module5b.csv data set after downloading it from Canvas into a data file in your working directory. According to a report, overweight people on low carbohydrate diets lost more weight and got greater cardiovascular benefits than people on a conventional low-fat diet. A nutritionist wishes to verify these results and documents the weight loss (in pounds) of 30 dieters on the low carbohydrate diet and 30 dieters on the low-fat diet.  Let Sample 1 be the sample of Low-carb dieters and Sample 2 be the sample of the Low-fat dieters. 
+data5b <- read.csv(file = "data/module5b.csv", stringsAsFactors = TRUE)
+
+# Step 1: Specify the null and the alternative hypotheses for the test. 
+
+# H0: Sample 1's weight loss is equal or less than Sample 2's weight loss. 
+
+# HA: Sample 1's weight loss is greater than Sample 2's weight loss.
+
+# Step 2 and 3: Run a command in R.
+t.test(data5b$WeightLoss~data5b$Diet, alternative="greater")
+
+# Steps 4 and 5: Interpret probability and results.
+# Our test statistic is 7.5806 with a corresponding p-value of 1.549e-10. Our p-value is smaller than our alpha, .05; therefore, we reject the null hypothesis (H0) and support the alternative (HA). Sample 1's weight loss is greater than Sample 2's weight loss. 
+
+```
+
+  
+# Task 5
+* Load the module5c.csv data set after downloading it from Canvas into a data file in your working directory. A diet center claims that it has the most effective weight loss program in the region. Its advertisements say, "Participants in our program lose more than 5 pounds within a month." Six clients of this program are weighed on the first day (Before) of the diet and then one month later (After). 
+* Using formula Before - After, execute Steps 1 - 5 and document where needed in comments:
+  + Step 1: Specify the null and alternative hypotheses that test the diet center’s claim.
+  + Step 2 and 3: Run a command in R.
+  + Steps 4 and 5: Interpret probability and results. 
+* Assume data is drawn from a normal distribution. 
+
+```{r} 
+# Task 5
+# Load the module5c.csv data set after downloading it from Canvas into a data file in your working directory. A diet center claims that it has the most effective weight loss program in the region. Its advertisements say, "Participants in our program lose more than 5 pounds within a month." Six clients of this program are weighed on the first day (Before) of the diet and then one month later (After).
+data5c <- read.csv(file = "data/module5c.csv")
+
+# Step 1: Specify the null and alternative hypotheses that test the diet center’s claim.
+
+# H0: Participants in the program lose 5 pounds or less within a month.
+
+# HA: Participants in the program lose more than 5 pounds within a month.
+
+# Step 2 and 3: Run a command in R.
+dif <- data5c$Before - data5c$After
+
+t.test(dif, mu = 5, alternative = "greater")
+
+# Steps 4 and 5: Interpret probability and results.
+# Our test statistic is 0.5547 with a corresponding p-value of .3015. Our p-value is greater than our alpha, .05; therefore, we retain the null hypothesis (H0) and cannot support the alternative (HA).Test is not significant.
+```
+
+# Task 6
+## Task 6A
+* Load the module5d.csv data set after downloading it from Canvas into a data file in your working directory. The fund.csv data set contains annual returns (in %) for Amazon and Apple since 2010. Let the difference be defined as Amazon - Apple, and the difference is normally distributed and the funds be a matched pair under the S&P500. Set up the hypotheses to test whether the mean returns of the two funds differ. 
+
+* Execute Steps 1 - 5 and document where needed in comments:
+  + Step 1: Specify the null and alternative hypotheses that test the claim whether the two funds differ. 
+  + Step 2 and 3: Run a command in R. 
+  + Steps 4 and 5: Interpret probability and results. 
+* Assume data is drawn from a normal distribution. 
+
+```{r}
+# Task 6
+## Task 6A - Load the module5d.csv data set after downloading it from Canvas into a data file in your working directory. The fund.csv data set contains annual returns (in %) for Amazon and Apple since 2010. Let the difference be defined as Amazon - Apple, and the difference is normally distributed and the funds be a matched pair under the S&P500. Set up the hypotheses to test whether the mean returns of the two funds differ. 
+data5d <- read.csv(file = "data/module5d.csv")
+
+# Step 1: Specify the null and alternative hypotheses that test the claim whether the two funds differ. 
+
+# H0: Amazon and Apple funds do not differ.
+
+# HA: Amazon and Apple funds differ.
+
+# Step 2 and 3: Run a command in R. 
+t.test(data5d$Amazon, data5d$Apple, paired = TRUE)
+
+# Steps 4 and 5: Interpret probability and results. 
+# Our test statistic is .15649 with a corresponding p-value of .8785. Our p-value is greater than our alpha, .05; therefore, we retain the null hypothesis (H0) and cannot support the alternative (HA).Test is not significant.
+
+
+```
+
+## Task 6B
+* Run 2 additional t-tests comparing Apple to the S&P500 (SP500) and then Amazon to the S&P500 (SP500). Interpret the results. 
+```{r} 
+## Task 6B - Run 2 additional t-tests comparing Apple to the S&P500 (SP500) and then Amazon to the S&P500 (SP500). Interpret the results. 
+
+# Apple and S&P500
+
+# H0: Apple and S&P500 funds do not differ.
+
+# HA: Apple and S&P500 funds differ.
+
+t.test(data5d$Apple, data5d$SP500)
+
+# Our test statistic is 1.8852 with a corresponding p-value of .07995. Our p-value is greater than our alpha, .05; therefore, we retain the null hypothesis (H0) and cannot support the alternative (HA).Test is not significant.
+
+#Amazon and S&P500
+
+# H0: Amazon and S&P500 funds do not differ.
+
+# HA: Amazon and S&P500 funds differ.
+
+t.test(data5d$Amazon, data5d$SP500)
+
+# Our test statistic is 1.7208 with a corresponding p-value of .1089. Our p-value is greater than our alpha, .05; therefore, we retain the null hypothesis (H0) and cannot support the alternative (HA).Test is not significant.
+
+# Both tests are not significant; however, the Amazon-S&P500 comparison produces a smaller test statistic and larger p-value than the Apple-S&P500 comparison. This suggests an inverse relationship between test statistics and p-values. 
+```

@@ -1,0 +1,131 @@
+---
+title: "Module3RHW"
+author: "Danni Martin"
+date: "January 22, 2024"
+output: pdf_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, tidy.opts = list(width.cutoff = 70), tidy = TRUE)
+```
+
+
+# Task 0 
+* Complete the following tasks and ensure your completed code to each question is copied into this .Rmd file into the appropriate R chunk, and that your final file is knitted into a .pdf document as already set up in this document. Leave the labels and instructions for each task. Include your name and date under the section above in quotations.
+
+* Knit this assessment from a .Rmd file to .pdf file.
+* Ensure your code requested to generate an answer is executable and not in comments. You should comment to explain your code and your answer. You may also copy the question into your R chunk and comment it out to improve readability. 
+* Do not include code that you don’t need outside of the assignment. This includes not printing out any complete data frames or data sets and variable values that are not explicitly asked for.
+* Proof read your submission to make sure you have included all files.
+* Ensure sure your assessment has been checked for readability. Add comments where necessary to improve readability. 
+* Always refer to file locations, paths, or directories relatively by putting a datasets in a data folder in your working directory and using "data/....csv" inside any read data lines of code. This means there should be no setwd() commands inside your .Rmd file.
+* Do not alter any data sets at all (e.g. remove extraneous rows or columns, change certain values manually, or rename files) prior to uploading in R.
+* Include required libraries and links to datasets where necessary.
+* Files that do not follow Task 0 will get points deducted from the top of the assignment. 
+
+## Resources Required
+* Datasets: module3.csv from Canvas. 
+* Libraries: tidyverse: including ggplot2
+
+* Download the dataset module3.csv from Canvas into a data file into your working directory. This dataset contains information on customers who have Churned, signifying exiting the credit card company. Load this dataset into R using relative links. The following variables are included. 
+  + CustomerId - Customer identification number 
+  + Surname – Last name
+  + Balance – Average balance of customer
+  + CreditScore - Credit Score of customer
+  + EstimatedSalary - Estimated Salary of customer
+  + Tenure – How long a customer has been with the bank in years
+  + Age - Range of Ages
+  + HasCrCard – Yes/No
+  + IsActiveMember - Yes/No
+  + Exited – “Churned” = Yes/No
+  + Geography - 3 locations
+  + Gender - Male/Female
+* Ensure all variables are in their appropriate data type (numerical/factor) prior to beginning the visualizations. 
+
+# Task 1: Boxplot
+* Use the dataset and ggplot2 to create a boxplot plot in R using 2 appropriate variables (1 numerical variable and 1 categorical variable). Add a color scheme of your choice (outside of black and white) and visible labels including a title.
+* In comments, describe whether it appears that there are any outliers in any of the categories from the boxplot. If so, which category(ies)? Why or why not? 
+```{r} 
+# Task 0 -
+# Load libraries. 
+library(tidyverse)
+
+# Load dataset.
+customers <- read.csv(file = "data/module3.csv", stringsAsFactors = TRUE)
+
+# Task 1 - Use the dataset and ggplot2 to create a boxplot plot in R using 2 appropriate variables (1 numerical variable and 1 categorical variable). Add a color scheme of your choice (outside of black and white) and visible labels including a title. 
+ggplot(customers, aes(x = Gender, y =CreditScore)) + geom_boxplot(aes(fill=Gender)) + scale_fill_brewer(palette = "Set1") + ggtitle("Credit Score Distribution by Gender") + labs(x="Gender", y = "Credit Score") + coord_flip()
+
+# In comments, describe whether it appears that there are any outliers in any of the categories from the boxplot. If so, which category(ies)? Why or why not?
+
+# 2 low outliers present in "Male" category. 4 outliers (2 low, 2 high) present in "Female" category.
+
+```
+
+# Task 2: Violin Plot
+* Use the dataset and ggplot2 to create a geom_violin plot in R using 2 appropriate variables (1 numerical and 1 categorical). Add a color scheme of your choice (outside of black and white for both fill and color parameters) and visible labels including a title. 
+* Answer the following question: Does there look like a difference between your groups on your numerical variable? Why or why not. 
+
+```{r}
+# Task 2: Violin Plot - Use the dataset and ggplot2 to create a geom_violin plot in R using 2 appropriate variables (1 numerical and 1 categorical). Add a color scheme of your choice (outside of black and white for both fill and color parameters) and visible labels including a title. 
+ggplot(customers, aes(x = Gender, y =CreditScore)) + geom_violin(aes(fill=Gender)) + scale_fill_brewer(palette = "Set1") + ggtitle("Credit Score Distribution by Gender") + labs(x="Gender", y = "Credit Score") + coord_flip()
+
+# Answer the following question: Does there look like a difference between your groups on your numerical variable? Why or why not. 
+
+# The distribution of Credit Score between the two genders is visibly distinct. The minimum of the “Male” category is lower than the minimum vale of “Female” category. The maximum of the “Female” category is higher than the maximum of the “Male” category. This is likely due to outliers within the respective categories. The “Male” category seems to have a slightly more elongated distribution than the “Female” category. The "Female" category seem to have a higher probability of a 500 credit score when compared to the “Male” category. The “Male” category seems to have a higher probability of a 700 credit score when compared to the “Female” category. Both distributions seem normal.  
+
+```
+
+
+# Task 3 Density Plot
+* Use the dataset and ggplot2 to create a density plot in R using an appropriate variable. Add a color scheme of your choice (outside of black and white for both fill and color parameters) and visible labels including a title. 
+* Answer the following question: Does this data look normal or skewed? Describe your answer in comments. 
+
+```{r} 
+# Task 3 Density Plot - Use the dataset and ggplot2 to create a density plot in R using an appropriate variable. Add a color scheme of your choice (outside of black and white for both fill and color parameters) and visible labels including a title. 
+ggplot(customers, aes(x = CreditScore))+geom_density(color="violetred4", fill="thistle") + ggtitle("Probability Density of Credit Score") + labs(x="Credit Score", y = "Probability Density")
+
+# Answer the following question: Does this data look normal or skewed? Describe your answer in comments.
+
+# Credit score seems slightly left skewed; however, the skew is not enough to be deemed as problematic. Credit Score variable can be treated as normally distributed.
+
+```
+
+# Task 4 Scatter
+* Use the dataset and ggplot2 to create a scatter plot in R using 2 appropriate numerical variables.  Add a color scheme of your choice (outside of black and white for the dots in the scatter) and visible labels including a title. Include a trendline that is a color other than blue. 
+* In comments, describe the strength and direction of the relationship.
+
+```{r}
+# Task 4 Scatter - Use the dataset and ggplot2 to create a scatter plot in R using 2 appropriate numerical variables.  Add a color scheme of your choice (outside of black and white for the dots in the scatter) and visible labels including a title. Include a trendline that is a color other than blue. In comments, describe the strength and direction of the relationship.
+
+# Weak positive trend. Additional analysis required to verify. 
+customers %>%
+  ggplot(aes(x = Balance, y = CreditScore)) + geom_point(color = "blue") + ggtitle("Credit Score vs Average Balance") + labs(x = "Average Balance", y = "Credit Score") + stat_smooth(method = "lm", color = "red")
+
+# In comments, describe the strength and direction of the relationship.
+
+# Weak positive trend. Additional analysis required to verify.  
+
+```
+
+
+# Task 5 Grouped Bar Graph
+* Make a new data object that groups by Geography and Gender and summarizes based on the mean of the Credit Score (CreditScore). 
+* Use ggplot to create a Grouped Bar Chart that showcases average Credit Score after grouping by the Geography variable and filling the color by the Gender variable. Give this chart a unique title and a color scheme of your choice. 
+* In comments, describe what you found in regards to the Credit Score in regards to Geography and Gender.   
+
+```{r} 
+# Task 5 - Grouped Bar Graph
+# Make a new data object that groups by Geography and Gender and summarizes based on the mean of the Credit Score (CreditScore).
+avg.cs.geo <- customers %>%
+  group_by(Geography, Gender) %>%
+  summarise(CreditScore = mean(CreditScore))
+
+# Use ggplot to create a Grouped Bar Chart that showcases average Credit Score after grouping by the Geography variable and filling the color by the Gender variable. Give this chart a unique title and a color scheme of your choice. 
+ggplot(avg.cs.geo,aes(Geography, CreditScore, fill = Gender)) + geom_bar(stat = "identity", position = "dodge") + labs(x = "Geography and Gender", y = "Average Credit Score") + ggtitle("Average Credit Score by Geography and Gender")
+
+# In comments, describe what you found in regards to the Credit Score in regards to Geography and Gender
+
+# Within this dataset, men located in Spain have the highest average credit score of the groups evaluated. Women located in Spain have the lowest average credit score of the groups evaluated. Men located in France have a higher average credit score than women located in France. Men located in Germany have a lower average credit score than women located in Germany. 
+
+```
+

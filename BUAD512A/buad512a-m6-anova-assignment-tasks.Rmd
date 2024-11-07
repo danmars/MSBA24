@@ -1,0 +1,181 @@
+---
+title: "Module6RHW"
+author: "Danni Martin"
+date: "February 12, 2024"
+output: pdf_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, tidy.opts = list(width.cutoff = 70), tidy = TRUE)
+```
+
+#Task 0
+* Complete the following tasks and ensure your completed code to each question is copied into this .Rmd file into the appropriate R chunk, and that your final file is knitted into a .pdf document as already set up in this document. Leave the labels and instructions for each task. Include your name and date under the section above in quotations.
+
+* Knit this assessment from a .Rmd file to .pdf file.
+* Ensure your code requested to generate an answer is executable and not in comments. You should comment to explain your code and your answer. You may also copy the question into your R chunk and comment it out to improve readability. 
+* Do not include code that you don’t need outside of the assignment. This includes not printing out any complete data frames or data sets and variable values that are not explicitly asked for.
+* Proof read your submission to make sure you have included all files.
+* Ensure sure your assessment has been checked for readability. Add comments where necessary to improve readability. 
+* Always refer to file locations, paths, or directories relatively by putting a datasets in a data folder in your working directory and using "data/....csv" inside any read data lines of code. This means there should be no setwd() commands inside your .Rmd file.
+* Do not alter any data sets at all (e.g. remove extraneous rows or columns, change certain values manually, or rename files) prior to uploading in R.
+* Include required libraries and links to datasets where necessary.
+
+* Files that do not follow Task 0 will get points deducted from the top of the assignment. 
+
+
+  
+  
+## Resources Required
+* Datasets: module6a.csv, module6b.csv, and module6c.csv from Canvas
+* Libraries: NA
+
+## Set all alpha levels in this assignment to .05. 
+
+
+# Task 1
+* Load the module6a.csv data set after downloading it from Canvas into a data file in your working directory. AMD produces computer chips. Let's assume they only have three assembly lines, “Ryzen 5,” “Ryzen 9,” and “Threadripper,” named for number variances in core processors. Each assembly line was originally designed using the same target production rate. However, over the years, various changes have been made to the lines. Accordingly, management wishes to determine whether the assembly lines are still operating at the same average hourly production rate.
+* Execute Steps 1 - 6 and document where needed in comments:
+  + 1A. Step 1:  Specify the competing hypotheses to test whether there are some differences in the mean production rates across the three assembly lines.
+  + 1B. Step 2 and 3, run the correct commands in R. 
+  + 1C. Steps 4 and 5: Interpret probability and results.
+  + 1D. Step 6: Conduct any Post Hoc Tests if needed. If not needed, make a statement as to why. If so, explain what you found.
+  
+```{r} 
+# Task 1 - Load the module6a.csv data set after downloading it from Canvas into a data file in your working directory. AMD produces computer chips. Let's assume they only have three assembly lines, “Ryzen 5,” “Ryzen 9,” and “Threadripper,” named for number variances in core processors. Each assembly line was originally designed using the same target production rate. However, over the years, various changes have been made to the lines. Accordingly, management wishes to determine whether the assembly lines are still operating at the same average hourly production rate.
+
+dataA <- read.csv(file = "data/module6a.csv", stringsAsFactors = TRUE)
+
+# 1A. Step 1:  Specify the competing hypotheses to test whether there are some differences in the mean production rates across the three assembly lines.
+
+#H0: The mean production rates are equal across processors. 
+
+#HA: The mean production rates differ across processors. 
+
+# 1B. Step 2 and 3, run the correct commands in R. 
+model1 <- aov(ProductionRate~Processor, dataA)
+anova(model1)
+
+# 1C. Steps 4 and 5: Interpret probability and results.
+
+# Our F-value is 2.3041 with a corresponding p-value of .1091. Our p-value is greater than our alpha, .05; therefore; the test is not significant.  
+
+# 1D. Step 6: Conduct any Post Hoc Tests if needed. If not needed, make a statement as to why. If so, explain what you found.
+
+# Post hoc tests are not needed because we failed to reject the null hypothesis, given the associated p-value of .1091. The differences between mean production rates across processors are not statistically significant. 
+
+
+```
+
+# Task 2 
+* Load the module6b.csv data set after downloading it from Canvas into a data file in your working directory. A statistics instructor wonders whether significant differences exist in her students’ final exam scores in her three different sections. She randomly selects the scores from 30 students in each section. Assume exam scores are normally distributed. 
+* Execute Steps 1 - 6 and document where needed in comments:
+  + 2A. Step 1:  Specify the competing hypotheses to test whether there are differences in the mean scores across the three sections. 
+  + 2B. Step 2 and 3, run the correct commands in R.
+  + 2C. Steps 4 and 5: Interpret probability and results.
+  + 2D. Step 6: Conduct any Post Hoc Tests if needed. If not needed, make a statement as to why. If so, explain what you found. 
+
+
+```{r} 
+# Task 2 - Load the module6b.csv data set after downloading it from Canvas into a data file in your working directory. A statistics instructor wonders whether significant differences exist in her students’ final exam scores in her three different sections. She randomly selects the scores from 30 students in each section. Assume exam scores are normally distributed. 
+dataB <- read.csv(file = "data/module6b.csv", stringsAsFactors = TRUE)
+
+# 2A. Step 1:  Specify the competing hypotheses to test whether there are differences in the mean scores across the three sections. 
+
+#H0: The mean final exam scores do not differ across sections.
+
+#HA: The mean final exam scores differ across sections. 
+
+# 2B. Step 2 and 3, run the correct commands in R.
+model2 <- aov(Score~Section, dataB)
+anova(model2)
+
+# 2C. Steps 4 and 5: Interpret probability and results.
+
+# Our F-value is 23.884 with a corresponding p-value of 5.39E-9. Our p-value is less than our alpha, .05; therefore, we reject the null hypothesis (H0) and support the alternative (HA). The mean final exam scores differs across sections. 
+
+# 2D. Step 6: Conduct any Post Hoc Tests if needed. If not needed, make a statement as to why. If so, explain what you found. 
+TukeyHSD(model2)
+
+# Test conducted using the Tukey HSD method. All p-values present in output are less than our alpha, .05; therefore, results indicate statistically different final exam scores across all sections. Section 2 had the largest mean score, followed by Section 1, then Section 3. 
+
+```
+
+# Task 3 
+* Load the module6c.csv data set after downloading it from Canvas into a data file in your working directory. At a gymnastics meet, three judges evaluate the balance beam performances of seven gymnasts. The judges use a scale of 1 to 10, where 10 is a perfect score. Assume that scores are normally distributed. 
+* Execute Steps 1 - 5 and document where needed in comments:
+  + 3A. Step 1:  Specify the competing hypotheses to test whether there are differences in the mean scores across Judges and across Gymnasts. 
+  + 3B. Step 2 and 3, run the correct commands in R. 
+  + 3C. Steps 4 and 5: Interpret probability and results of both hypotheses (Judge and Gymnast). 
+
+```{r} 
+# Task 3 - Load the module6c.csv data set after downloading it from Canvas into a data file in your working directory. At a gymnastics meet, three judges evaluate the balance beam performances of seven gymnasts. The judges use a scale of 1 to 10, where 10 is a perfect score. Assume that scores are normally distributed. 
+dataC <- read.csv(file = "data/module6c.csv", stringsAsFactors = TRUE)
+
+# 3A. Step 1:  Specify the competing hypotheses to test whether there are differences in the mean scores across Judges and across Gymnasts. 
+
+# Hypothesis 1:
+
+#H0:The mean scores do not differ across judges.
+
+#HA: The mean scores differ across judges. 
+
+# Hypothesis 2:
+
+#H0:The mean scores do not differ across gymnasts.
+
+#HA: The mean scores differ across gymnasts. 
+
+
+# 3B. Step 2 and 3, run the correct commands in R.
+model3 <- aov(Score ~ Judge + Gymnast, data = dataC)
+summary(model3)
+
+# 3C. Steps 4 and 5: Interpret probability and results of both hypotheses (Judge and Gymnast).
+
+# Our F-value for judges is .804 with a corresponding p-value of 0.47. Our p-value is greater than our alpha, .05; therefore, we retain the null hypothesis (H0) and cannot support the alternative (HA). The mean scores do not differ across judges. 
+
+# Our F-value for gymnasts is 69.100 with a corresponding p-value of 1.32E-8. Our p-value is less than our alpha, .05; therefore, we reject the null hypothesis (H0) and support the alternative (HA). The mean scores differ across gymnasts. 
+
+```
+
+# Task 4 
+* For Problem 3, there were 3 judges and 7 gymnasts. Run 2 commands to determine how many pairs are generated for each of those two variables. In comments, list the answer for each categorical variable. 
+  + 4A. Pairs for 3 judges
+  + 4B. Pairs for 7 gymnasts. 
+
+```{r} 
+# Task 4 - For Problem 3, there were 3 judges and 7 gymnasts. Run 2 commands to determine how many pairs are generated for each of those two variables. In comments, list the answer for each categorical variable.
+
+# 4A. Pairs for 3 judges - 3 pairs.
+choose(3,2)
+
+# 4B. Pairs for 7 gymnasts - 21 pairs. 
+choose(7,2)
+```
+
+# Task 5 
+* The screening process for detecting a rare disease is not perfect. Researchers have developed a blood test that is considered fairly reliable. It gives a positive reaction in 95.8% of the people who have that disease. However, it erroneously gives a positive reaction in 2.6% of the people who do not have the disease. Consider the null hypothesis "the individual does not have the disease" to answer the following questions.
+
+* In your R code, answer the following questions:
+  + 5A: What is the situation when we did not reject null and it was the correct decision?
+  + 5B: What is the probability of a Type I error?
+  + 5C: What is the probability of a Type II error?
+  + 5D: What is the situation where the null hypothesis was false and it was the correct decision?
+```{r} 
+# Task 5 - The screening process for detecting a rare disease is not perfect. Researchers have developed a blood test that is considered fairly reliable. It gives a positive reaction in 95.8% of the people who have that disease. However, it erroneously gives a positive reaction in 2.6% of the people who do not have the disease. Consider the null hypothesis "the individual does not have the disease" to answer the following questions.
+
+# 5A: What is the situation when we did not reject null and it was the correct decision?
+# The individual did not have the disease and tested negative. 
+
+# 5B: What is the probability of a Type I error?
+# .026
+
+# 5C: What is the probability of a Type II error?
+# .042
+
+# 5D: What is the situation where the null hypothesis was false and it was the correct decision?
+# The individual has the disease and tested positive. 
+
+```
+
+

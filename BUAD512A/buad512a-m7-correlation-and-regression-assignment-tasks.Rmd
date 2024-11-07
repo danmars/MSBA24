@@ -1,0 +1,145 @@
+---
+title: "Module7RHW"
+author: "Danni Martin"
+date: "February 19, 2024"
+output: pdf_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, tidy.opts = list(width.cutoff = 70), tidy = TRUE)
+```
+
+# Task 0
+* Complete the following tasks and ensure your completed code to each question is copied into this .Rmd file into the appropriate R chunk, and that your final file is knitted into a .pdf document as already set up in this document. Leave the labels and instructions for each task. Include your name and date under the section above in quotations.
+
+* Knit this assessment from a .Rmd file to .pdf file.
+* Ensure your code requested to generate an answer is executable and not in comments. You should comment to explain your code and your answer. You may also copy the question into your R chunk and comment it out to improve readability. 
+* Do not include code that you don’t need outside of the assignment. This includes not printing out any complete data frames or data sets and variable values that are not explicitly asked for.
+* Proof read your submission to make sure you have included all files.
+* Ensure sure your assessment has been checked for readability. Add comments where necessary to improve readability. 
+* Always refer to file locations, paths, or directories relatively by putting a datasets in a data folder in your working directory and using "data/....csv" inside any read data lines of code. This means there should be no setwd() commands inside your .Rmd file.
+* Do not alter any data sets at all (e.g. remove extraneous rows or columns, change certain values manually, or rename files) prior to uploading in R.
+* Include required libraries and links to datasets where necessary.
+
+* Files that do not follow Task 0 will get points deducted from the top of the assignment. 
+
+
+
+## Resources Required
+* Datasets: module7.csv from Canvas
+* Libraries: N/A
+
+
+## Set all alpha levels in this assignment to .05. 
+
+
+# Task 1 
+* Manually download the file module7.csv from Canvas into your working directory. 
+* Test hypotheses with regards to whether a correlation exists between Quality of Sleep and the following: Sleep.Duration, Daily.Steps, Stress.Level, Physical.Activity.Level, and Age
+  + Quality.of.Sleep and Sleep.Duration
+  + Quality.of.Sleep and Daily.Steps
+  + Quality.of.Sleep and Stress.Level
+  + Quality.of.Sleep and Physical.Activity.Level
+  + Quality.of.Sleep and Age
+
+```{r} 
+library(tidyverse)
+# Task 1 - Manually download the file module7.csv from Canvas into your working directory. 
+module7 <- read.csv(file = "data/module7.csv", stringsAsFactors = TRUE)
+
+# Test hypotheses with regards to whether a correlation exists between Quality of Sleep and the following: Sleep.Duration, Daily.Steps, Stress.Level, Physical.Activity.Level, and Age
+
+#H0: There is no relationship between the two variables.
+
+#HA: There is a relationship between the two variables. 
+
+# Quality.of.Sleep and Sleep.Duration. Quality of Sleep and Sleep Duration are significantly, strongly, and positively correlated [r=.883213; p<.05].
+cor.test(module7$Quality.of.Sleep, module7$Sleep.Duration)
+
+# Quality.of.Sleep and Daily.Steps - Quality of Sleep and Daily Steps have no significant relationship [r=.01679141; p>.05]. We fail to reject the null.
+cor.test(module7$Quality.of.Sleep, module7$Daily.Steps)
+
+# Quality.of.Sleep and Stress.Level - Quality of Sleep and Stress Level are significantly, strongly, and negatively correlated [r=-.898752, p<.05].
+cor.test(module7$Quality.of.Sleep, module7$Stress.Level)
+
+# Quality.of.Sleep and Physical.Activity.Level - Quality of Sleep and Physical Activity have a very weak positive significant relationship [r=.1928965; p<.05].
+cor.test(module7$Quality.of.Sleep, module7$Physical.Activity.Level)
+
+# Quality.of.Sleep and Age - Quality of Sleep and Age are significantly, weakly, and positively correlated [r=.4737339; p<.05].
+cor.test(module7$Quality.of.Sleep, module7$Age)
+
+```
+
+# Task 2 
+* Using Quality.of.Sleep as the outcome (Y) variable, create 2 separate simple regressions with Stress.Level and Physical.Activity.Level. Interpret the R-squared, slope coefficient, and p-value you found in each model in comments. Make a comment as to whether each variable is strong or weak. 
+* Predict Quality.of.Sleep when Physical.Activity.Level is at 10.
+* Predict Quality.of.Sleep when Physical.Activity.Level is at 80.
+* Answer - did much change in terms of the prediction regarding Physical Activity? Justify your answer.
+```{r} 
+# Task 2 - Using Quality.of.Sleep as the outcome (Y) variable, create 2 separate simple regressions with Stress.Level and Physical.Activity.Level. Interpret the R-squared, slope coefficient, and p-value you found in each model in comments. Make a comment as to whether each variable is strong or weak.
+
+# Quality of Sleep and Stress Level LM. Our slope and p-value of Quality of Sleep and Stress Level indicate a significant strong negative relationship [b = -0.6062; p < .05]. Our R-squared value is .0.8078, suggesting that Stress Level accounts for 81% of the variance in Quality of Sleep. 
+stressLM <- lm(Quality.of.Sleep~Stress.Level, data=module7)
+summary(stressLM)
+
+#Quality of Sleep and Physical Activity Level LM. Our slope and p-value of Quality of Sleep and Physical Activity Level indicate a significant weak positive relationship [b = 0.011084, p < .05]. Our R-squared is 0.03721, suggesting that Physical Activity Level accounts for 3.7% of the variance in Quality of Sleep.
+palLM <- lm(Quality.of.Sleep~Physical.Activity.Level, data=module7)
+summary(palLM)
+
+# Predict Quality.of.Sleep when Physical.Activity.Level is at 10.
+predict(palLM, data.frame(Physical.Activity.Level = 10))
+
+# Predict Quality.of.Sleep when Physical.Activity.Level is at 80.
+predict(palLM, data.frame(Physical.Activity.Level = 80))
+
+# Answer - did much change in terms of the prediction regarding Physical Activity? Justify your answer. The difference in our predictions of Quality of Sleep when Physical Activity Level is at 10 versus at 80 is .775879. This aligns with our model's slope of ~.01, as we expect for every 1% increase of Physical Activity, Quality of Sleep would also improve by 1%.  
+(7.543701 - 6.767822) / 8
+
+
+```
+
+
+# Task 3 
+* Use ggplot2 to create a multiple boxplot of the Quality.of.Sleep based on Sleep.Disorder. 
+* Using Quality.of.Sleep as the outcome (Y) variable, conduct a linear regression using a categorical variable Sleep.Disorder. Interpret the R-squared, the slope coefficients, and p-values you found in comments. Make a comment as to whether this variable is strong or weak and describe what you found. 
+```{r} 
+# Task 3 - Use ggplot2 to create a multiple boxplot of the Quality.of.Sleep based on Sleep.Disorder. 
+module7$Sleep.Disorder <- factor(module7$Sleep.Disorder, levels = c("None","Sleep Apnea", "Insomnia"))
+
+ggplot(module7, aes(x = Sleep.Disorder, y = Quality.of.Sleep)) + geom_boxplot()
+
+# Using Quality.of.Sleep as the outcome (Y) variable, conduct a linear regression using a categorical variable Sleep.Disorder. Interpret the R-squared, the slope coefficients, and p-values you found in comments. Make a comment as to whether this variable is strong or weak and describe what you found.
+
+sdLM <- lm(Quality.of.Sleep~Sleep.Disorder, data=module7)
+summary(sdLM)
+
+#All p-values are less than our alpha, .05; therefore, are significant. R-squared is 0.1295 suggesting that Sleep Disorders explains about 13% of variance in Quality of Sleep. The mean Sleep Quality of individuals without a sleep disorder is 7.62557 (slope intercept). This mean varies by -.42044 in individuals with Sleep Apnea, and -1.09310 in individuals with Insomnia.
+
+
+
+```
+
+# Task 4
+* Data Prep: Remove Person.ID along with categorical variables from the Sleep dataset (BMI.Category, Sleep.Disorder, and Blood.Pressure, Gender, and Occupation) using a select() function. 
+* Model: Considering only the remaining numerical variables in the data set create a model explaining Quality.of.Sleep using the p-value approach.  Remove variables one at a time and show all your different iterations and list why you dropped the variable you did in regards to the p-value and new adjusted R-Squared. 
+* Interpret: Interpret the final model. 
+
+```{r}
+# Task 4 - Data Prep: Remove Person.ID along with categorical variables from the Sleep dataset (BMI.Category, Sleep.Disorder, and Blood.Pressure, Gender, and Occupation) using a select() function. 
+m7.all <- module7 %>%
+  select(Age, Sleep.Duration, Quality.of.Sleep, Physical.Activity.Level, Stress.Level, Daily.Steps)
+
+# Model: Considering only the remaining numerical variables in the data set create a model explaining Quality.of.Sleep using the p-value approach.  Remove variables one at a time and show all your different iterations and list why you dropped the variable you did in regards to the p-value and new adjusted R-Squared. 
+
+#reg.m7.all - Using all variables of m7.all. All variables are significant and none are insignificant. F-statistic is high with a low p-value (<.05). Adjusted R-squared = .9049.
+options(scipen = 999)
+reg.m7 <- lm(Quality.of.Sleep~., data = m7.all)
+summary(reg.m7)
+
+#Check for multicollinearity. No VIF score is above 10.
+library("car")
+vif(reg.m7)
+
+# Interpret: Interpret the final model. A one year increase in Age is associated with a .01 increase in Sleep Quality. A one hour increase in Sleep Duration is associated with a .65 increase in Sleep Quality. A one unit increase in Physical Activity Level is associated with a .005 decrease in Sleep Quality. A one unit increase in Stress Level is associated with a .37 decrease in Sleep Quality. A one unit increase in Daily Steps is associated with a .00015 increase in Sleep Quality. 
+```
+
+

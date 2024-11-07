@@ -1,0 +1,376 @@
+---
+title: "Final Project"
+author: "Danni Martin"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, tidy.opts = list(width.cutoff = 70), tidy = TRUE)
+```
+
+
+# Task 0 
+* Files that do not follow Task 0 will get points deducted from the top of the assignment. 
+* Complete the following tasks and ensure your completed code to each question is copied into this .Rmd file into the appropriate R chunk, and that your final file is knitted into a .pdf document as already set up in this document. Leave the labels and instructions for each  task. Include your name and date under the author and data portion above in quotations.
+* Important: To avoid point reductions:
+  + Do not include code that you don’t need outside of the assignment. This includes not printing out any complete data frames or data sets and variable values that are not explicitly asked for.
+  + Ensure your code requested to generate an answer is executable and not in comments. 
+  + Proof read your submission to make sure you have included all files.
+  + Ensure sure your assessment has been checked for readability. 
+  + Knit this assessment from a .Rmd file to .pdf file. 
+  + Include required libraries and links to datasets (read.csv) where necessary.
+  + Always refer to file locations, paths, or directories relatively by putting a datasets in a data folder in your working directory and using "data/....csv" inside any read data lines of code. This means there should be no setwd() commands inside your .Rmd file.
+  + Do not alter any data sets at all (e.g. remove extraneous rows or columns, change certain values manually, or rename files) prior to uploading in R.
+  + Refrain from including commands that generate output that spans multiple pages and leads to substantial scrolling of the pdf. 
+
+## Resources Required
+* Spend a few minutes looking through the documents on Canvas and https://www.realtor.com/research/data/ before you begin. For this Final Project, you may use historical data at the state level, metro level, county level or zip level under the inventory - monthly category. Data and a data dictionary are provided to you on Canvas. 
+* Choose one of the following: 
+     + RDC_Inventory_Core_Metrics_County_History.csv,           
+     + RDC_Inventory_Core_Metrics_Metro_History.csv,          
+     + RDC_Inventory_Core_Metrics_State_History.csv,           
+     + RDC_Inventory_Core_Metrics_Zip_History.csv
+
+## Overall Goal
+* Your goal is to examine the relationships with Price in the housing market. In preparing the data, you can create subsets of the data set to make it easier to work with based on what you need. Read all the instructions below before making decisions on how to slice down the data set. Take note that some of the variables are measuring a similar thing, so be sure to choose unique variables to have the most accurate results. 
+
+# Task 1 (25 points)
+* Take steps to read in and prepare the data, ensuring that there are no extra lines that should not be in the dataset and that the variables you choose are in the correct data types. 
+* Save a new smaller data object that only includes the variables you choose to work with throughout the project. 
+* If you want to eliminate rows by subsetting a smaller dataset after eliminating columns in the step above, do so here and provide the rationale based on what you want to examine. 
+* Code any missing values appropriately and rename variables where necessary with explanation in comments of what the new named variable represents. 
+* Comment on how you cleaned the data and your rationale for doing so. 
+
+```{r, message=FALSE}
+#Load libraries
+library(tidyverse)
+library(semTools)
+library("car")
+
+#Load dataset
+county.data <- read.csv(file = "data/RDC_Inventory_Core_Metrics_County_History.csv")
+
+#Clean data
+county.cleaned <- county.data %>%
+  ## Select variables
+  select(month_date_yyyymm, county_name, median_listing_price, average_listing_price, active_listing_count, median_days_on_market, quality_flag) %>%
+  ##Drop NAs for average_listing_price
+  drop_na(average_listing_price) %>%
+  ## Remove '1' values in quality_flag
+  mutate(quality_flag = coalesce(quality_flag, 0)) %>%
+  mutate(quality_flag = na_if(x = quality_flag, y = 1)) %>%
+  drop_na(quality_flag) %>%
+  ##Separate county_name into "county" and "state"
+  separate_wider_delim(county_name, delim = ",", names = c("county", "state")) %>%
+  ##Split month_date_yyyymm column into 'year' and 'month'
+  separate_wider_position(month_date_yyyymm, c(year = 4, month = 2), cols_remove = FALSE) %>%
+  mutate(year = as.factor(year)) %>%
+  mutate(month = as.factor(month)) %>%
+  mutate(month = recode_factor(.x = month,
+                               `01` = 'Jan',
+                               `02` = 'Feb',
+                               `03` = 'Mar',
+                               `04` = 'Apr',
+                               `05` = 'May',
+                               `06` = 'Jun',
+                               `07` = 'Jul',
+                               `08` = 'Aug',
+                               `09` = 'Sep',
+                               `10` = 'Oct',
+                               `11` = 'Nov',
+                               `12` = 'Dec'))
+
+#Filter data to only include Virginia cities of interest. Recode variables.
+va.cleaned <- county.cleaned %>%
+  filter(state == " va") %>%
+  filter(county %in% c("virginia beach city", "norfolk city", "chesapeake city", "portsmouth city", "suffolk city")) %>%
+  mutate(county = as.factor(county)) %>%
+  mutate(state = as.factor(state)) %>%
+  mutate(month_date_yyyymm = as.numeric(month_date_yyyymm))
+
+```
+
+
+# Task 2 (30 points)
+* Examine at least 6 variables from the data set including all measures of central tendency and spread that we covered in the course for continuous variables, and frequency and relative frequency for categorical variables. Make your output clear by numbering your variables 1 - 6 and outputting all summary measures at ones. 
+* Depending on how you sliced the data, you may only have one categorical variable out of the 6. 
+* Provide rationale and insights on what you took away from this step in comments. 
+
+```{r, message=FALSE}
+#1. Year - Frequency and Relative Frequency. Examining # of observations per year. Fewer observations in 2016 and 2022 when compared to the other years. 
+(year.freq <- table(va.cleaned$year))
+prop.table(year.freq)
+
+#2. County - Frequency and Relative Frequency.Examining # of observations per county. Observations for each counties equals 74, except Virginia Beach (72).
+(county.freq <- table(va.cleaned$county))
+prop.table(county.freq)
+
+#3. Median Listing Price - Large sample size: -7 to 7. Distribution is left skewed and platykurtic, but not problematic, [-7 < z < 7]. 
+va.cleaned %>%
+  summarize(mean.mlp = mean(median_listing_price),
+            med.mlp = median(median_listing_price),
+            sd.mlp = sd(median_listing_price),
+            var.mlp = var(median_listing_price),
+            IQR.mlp = IQR(median_listing_price),
+            mode.mlp = names(x = sort(x = table(median_listing_price), decreasing = TRUE))[1])
+range(va.cleaned$median_listing_price)
+skew(va.cleaned$median_listing_price)
+kurtosis(va.cleaned$median_listing_price)
+
+#4. Average Listing Price - Large sample size: -7 to 7. Distribution is right skewed and platykurtic, but not problematic, [-7 < z < 7]. 
+va.cleaned %>%
+  summarize(mean.alp = mean(average_listing_price),
+            med.alp = median(average_listing_price),
+            sd.alp = sd(average_listing_price),
+            var.alp = var(average_listing_price),
+            IQR.alp = IQR(average_listing_price),
+            mode.alp = names(x = sort(x = table(average_listing_price), decreasing = TRUE))[1])
+range(va.cleaned$average_listing_price)
+skew(va.cleaned$average_listing_price)
+kurtosis(va.cleaned$average_listing_price)
+
+#5. Median Days on Market - Large sample size: -7 to 7. Distribution is right skewed and platykurtic, but not problematic, [-7 < z < 7].
+va.cleaned %>%
+  summarize(mean.dom = mean(median_days_on_market),
+            med.dom = median(median_days_on_market),
+            sd.dom = sd(median_days_on_market),
+            var.dom = var(median_days_on_market),
+            IQR.dom = IQR(median_days_on_market),
+            mode.dom = names(x = sort(x = table(median_days_on_market), decreasing = TRUE))[1])
+range(va.cleaned$median_days_on_market)
+skew(va.cleaned$median_days_on_market)
+kurtosis(va.cleaned$median_days_on_market)
+
+#6. Active Listing Count - Large sample size: -7 to 7. Distribution is right skewed to a problematic degree, [z > 7]. Distribution is leptokurtic, but not problematic, [ -7 < z < 7]. 
+va.cleaned %>%
+  summarize(mean.alc = mean(active_listing_count),
+            med.alc = median(active_listing_count),
+            sd.alc = sd(active_listing_count),
+            var.alc = var(active_listing_count),
+            IQR.alc = IQR(active_listing_count),
+            mode.alc = names(x = sort(x = table(active_listing_count), decreasing = TRUE))[1])
+range(va.cleaned$active_listing_count)
+skew(va.cleaned$active_listing_count)
+kurtosis(va.cleaned$active_listing_count)
+va.cleaned %>%
+  ggplot(aes(active_listing_count)) + geom_histogram()
+
+
+```
+
+
+# Task 3 (30 points)
+* Use at least 3 grouping functions to group the data in order to see data at different levels. You may group categorical variables further to see different patterns based on location or even groups of dates. Comment on the insights you took away from this step. 
+
+```{r, message=FALSE}
+
+# Group by Year/Average Listing Price. Average Listing Price has consistently increased each year.
+year.alp <- va.cleaned %>%
+  group_by(year) %>%
+  summarise(average_listing_price = mean(average_listing_price))
+
+# Group by Year/Active Listing Count. Active Listing Count has consistently decreased each year.
+year.alc <- va.cleaned %>%
+  group_by(year) %>%
+  summarise(active_listing_count = mean(active_listing_count))
+
+# Group by Year/County/Average Listing Price. Virginia Beach has consistently higher average listing prices than the other counties. Portsmouth has consistently lower average listing prices than the other counties.
+year.county.alp <- va.cleaned %>%
+  group_by(year, county) %>%
+  summarise(average_listing_price = mean(average_listing_price))
+
+# Group by Year/County/Active Listing Count. Virginia Beach has consistently higher active listing counts than the other counties. This might suggest that location has a significant impact on average listing price, regardless of active listing count. 
+year.county.alc <- va.cleaned %>%
+  group_by(year, county) %>%
+  summarise(active_listing_count = mean(active_listing_count))
+
+```
+
+
+# Task 4 (40 points)
+* Create at least 4 well-formatted, appropriate graphs depicting relationships between 2 variables (used or created in the step above) of your choosing. Use good code-formatting practices and ensure your graphs have good use of parameters including color, labels, legends, or titles - where appropriate. Include a sentence or two after each graph in comments that explains what the graph shows and what you learned from the graph. 
+
+```{r, message=FALSE}
+# Boxplot of Average Listing Price by Year. Average Listing Price has increased every year from 2016 to 2022. Several outliers present.
+(plot.year.alp <- va.cleaned %>%
+  ggplot(aes(x= year, y = average_listing_price/1000)) + geom_boxplot(aes(fill = year)) + labs(x = "Year", y = "Average Listing Price (in 1000s)") + ggtitle("Average Listing Price by Year"))
+
+
+# Boxplot of Active Listing Count by Year. Active Listing Count has decreased every year from 2016 to 2022. Outliers present in 2019, 2021, and 2022.
+(plot.year.alc <- va.cleaned %>%
+  ggplot(aes(x= year, y = active_listing_count)) + geom_boxplot(aes(fill = year)) + labs(x = "Year", y = "Active Listing Count") + ggtitle("Active Listing Count by Year"))
+
+
+# Plot of Average Listing Price (in $1000s) by County between 2016 - 2022. Average Listing Price has consistently increased each year for all selected counties. However, Average Listing Price does differ depending on the county. For example, Virginia Beach is consistently more expensive than the other cities, regardless of year. Portsmouth is consistently less expensive than the other counties, regardless of year. 
+(point.alp.year <- year.county.alp %>%
+  ggplot(aes(x = year, y = average_listing_price/1000)) + geom_point(aes(color = county)) + geom_line(aes(color = county, group = county)) + theme_minimal() + labs(x = "Year", y = "Average Listing Price (in $1000s)") + ggtitle("Average Listing Price by County between 2016-2022"))
+
+
+# Plot of Active Listing Count by County between 2016 - 2022. Active Listing Count has consistently decreased each year for all selected counties. However, the slope of decrease seems to vary by county and year.   
+(point.alc.year <- year.county.alc %>%
+  ggplot(aes(x = year, y = active_listing_count)) + geom_point(aes(color = county)) + geom_line(aes(color = county, group = county)) + geom_smooth()
+  + theme_minimal() + labs(x = "Year", y = "Active Listing Count") + ggtitle("Active Listing Count by County between 2016-2022"))
+
+
+# Plot of Average Listing Price (in $1000s) versus Active Listing Count, by County. For each county, Active Listing Price decreases as Active Listing Count increases. 
+(plot.alc.alp.county <- va.cleaned %>%
+  ggplot(aes(x = active_listing_count, y = average_listing_price/1000, color = county)) + geom_point() + geom_smooth(method = "lm") + theme_minimal() + labs(x = "Active Listing Count", y = "Average Listing Price (in $1000s") + ggtitle("Active Listing Count versus Average Listing Price"))
+
+
+```
+
+
+# Task 5 (20 points)
+* Make some general options on what you would find when you compare variables based on what you found above in the data. 
+
+```{r}
+# Average Listing Price has consistently increased each year, and across all counties of interest. Outliers present in all years, except 2021. I assume outliers are due to large disparities based on location/county, particularly between Virginia Beach and Portsmouth. 
+
+# Active Listing Count has consistently decreased each year, and across all counties of interest. Outliers present in 2019, 2021, and 2022. Additionally, there seemed to be a more dramatic decrease in average Active Listing Counts between 2019-2022, particularly for Virginia Beach, than prior years.   
+
+# Average Listing Price differs across counties of interest. Virginia Beach is consistently the most expensive, with the highest Average Listing Prices between 2016-2022. Chesapeake and Suffolk are similarly priced between 2016-2022. Norfolk has the 2nd lowest Average Listing Prices between 2016-2022. Lastly, Portsmouth is consistently the least expensive, with the lowest Average Listing Prices across 2016-2022.  
+
+# Active Listing Count differs across counties. Virginia Beach consistently has the highest average Active Listing Count each year. Followed by Norfolk and Chesapeake, which have similar average Active Listing Counts across 2016-2022. Lastly, Portsmouth and Suffolk have the lowest Active Listing Counts across 2016-2022.
+
+```
+
+
+# Task 6 (60 points)
+* Select the appropriate test to test at least 4 relationships between a Price variable as a Y variable (median or average, percentage or otherwise) and at least one other variable. Do not to choose another price variable in making predictions of price. Go through the correct steps for hypothesis testing based on the test you selected including listing your conclusions you made and whether they differ from your predictions above in Step 5 after examining relationships visually. 
+* You may choose to use ANOVA, simple, or multiple regression to evaluate 4 relationships with regards to Y to satisfy the requirements. If you choose an ANOVA, be sure to conduct appropriate Post Hoc Tests. 
+
+```{r}
+
+#Test 1 & 2: Differences in Average Price Listing across Years and Counties.
+#Step 1:
+
+#Hypothesis 1:
+
+#H0 - The Average Listing Price does not differ across years (2016-2022).
+
+#HA - The Average Listing Price does differ across years (2016-2022).
+
+
+#Hypothesis 2:
+
+#H0 - The Average Listing Price does not differ across counties.
+
+#HA - The Average Listing Price does differ across counties.
+
+#Step 2 & 3: Compute test-statistic.
+
+aov.alp.year.county <- aov(average_listing_price ~ year + county, data = va.cleaned)
+summary(aov.alp.year.county)
+
+#Step 4 & 5: Interpret probabilities and results. 
+
+#Our F-Value for year is 341.8 with a corresponding p-value < .05. Our p-value is less than our alpha; therefore, we reject the null (H0) and support the alternative (HA). There is a significant difference in Average Listing Price across years.
+
+#Our F-Value for county is 3670.2 with a corresponding p-value < .05. Our p-value is less than our alpha; therefore, we reject the null (H0) and support the alternative (HA). There is a significant difference in Average Listing Price across counties.
+
+#Step 6: Conduct any Post Hoc Tests if needed.
+TukeyHSD(aov.alp.year.county)
+
+# All years are significantly different from each other except: 2017-2016. This aligns with the earlier prediction, except for 2017-2016.
+
+# All counties are significantly different from each other except: Suffolk and Chesapeake. This aligns with earlier prediction- all counties differ significantly, except Suffolk and Chesapeake, which are similarly priced. 
+
+################################################################
+
+#Test 3 & 4: Differences in Active Listing Count across Years and Counties.
+#Step 1:
+
+#Hypothesis 1:
+
+#H0 - The Active Listing Count does not differ across years (2016-2022).
+
+#HA - The Active Listing Count does differ across years (2016-2022).
+
+
+#Hypothesis 2:
+
+#H0 - The Active Listing Count does not differ across counties.
+
+#HA - The Active Listing Count does differ across counties.
+
+#Step 2 & 3: Compute test-statistic.
+
+aov.alc.year.county <- aov(active_listing_count ~ year + county, data = va.cleaned)
+summary(aov.alc.year.county)
+
+#Step 4 & 5: Interpret probabilities and results. 
+
+#Our F-Value for year is 177.7 with a corresponding p-value < .05. Our p-value is less than our alpha; therefore, we reject the null (H0) and support the alternative (HA). There is a significant difference in Active Listing Count across years.
+
+#Our F-Value for county is 308.8 with a corresponding p-value < .05. Our p-value is less than our alpha; therefore, we reject the null (H0) and support the alternative (HA). There is a significant difference in Average Listing Price across counties.
+
+#Step 6: Conduct any Post Hoc Tests if needed.
+TukeyHSD(aov.alc.year.county)
+
+# All years are significantly different from each other except: 2017-2016, 2018-2017, and 2022-2021. This somewhat aligns with the prior prediction; however, it was not anticipated that the difference between 2017-2016, 2018-2017, and 2022-2021 would be insignificant.
+
+# All counties to be significantly different from each other except: Suffolk and Portsmouth. This somewhat aligns with the prior prediction. Suffolk and Portsmouth are similar, as predicted. Norfolk and Chesapeake are significantly different, in contrast, to prior prediction.
+
+
+##############################################################
+
+#Test 5 & 6: Active Listing Count and County Impact on Average Listing Price. 
+#Step 1: 
+
+#Hypothesis 1: Active Listing Count affects Average Listing Price. 
+
+#H0: The slope of the line in regards to Active Listing Count is equal to zero.
+
+#HA: The slope of the line in regards to Active Listing Count is not equal to zero.
+
+#Hypothesis 2: County affects Average Listing Price. 
+
+#H0: The slope of the line in regards to County is equal to zero.
+
+#HA: The slope of the line in regards to County is not equal to zero.
+
+#Step 2 & 3: Compute test-statistic.
+options(scipen = 999)
+regAll <- lm(average_listing_price~active_listing_count + county, data = va.cleaned)
+summary(regAll)
+
+# Check for multicollinearity. No VIF score is above 10.
+vif(regAll)
+
+#Step 4 & 5: Interpret probabilities and results.
+
+# All variables are significant and none are insignificant. F-statistic is high with a low p-value (p < .05). A one active listing increase is associated with a $74.95 decrease in Average Listing Price. Average Listing Price varied depending on county. Average Listing Price from highest to lowest is as follows: Virginia Beach, Chesapeake, Suffolk, Norfolk, and Portsmouth. Adjusted R-squared is .9574, explaining about 96% of variance, indicating that this is a strong model. 
+
+
+```
+
+
+# Task 7A (10 points)
+* Describe the variables you found to be the strongest predictors of price. 
+
+```{r}
+# Of the variables analyzed, county/location was the largest predictor of price, followed by active listing count. 
+
+#Using Chesapeake as the referent category:
+#Norfolk was associated with a $65,268.99 decrease in price. 
+#Portsmouth was associated with a $195,757.59 decrease in price.
+#Suffolk was associated with a $37,647.52 decrease in price.
+#Virginia Beach was associated with a $177,069.92 increase in price.
+
+#A one unit increase in Active Listings was associated with a $74.95 descrease in price. As active listings increase, average price listing decreases. 
+```
+
+# Task 7B (10 points)
+* What limitations, biases, or confounding variables could affect the results? 
+
+```{r}
+#Assumptions: Both ANOVA and linear regression rely on specific assumptions, such as normality of residuals and homeoscedasticity. 
+
+#Skew and Outliers: Active Listing Count was skewed right to a problematic degree. Average Listing Price was also skewed right, though not to a problematic degree. Several high and low outliers visible in "Average Listing Price by Year" boxplot. Several high outliers present in "Active Listing Count by Year" boxplot. 
+
+#Confounding variables: Though this analysis identified a significant relationship between location and average price listing, it did not provide insight into why some locations may be evaluated higher than others. This analysis did not include socioeconomic factors, such as income, accessibility, crime levels, or other amenities that may impact property value. Additionally, it did not consider property specific variables like: size, layout, age/condition, or property type. 
+
+#Bias: Analysis was very specific to the Hampton Roads area and likely would not be helpful in broader/national Real Estate analysis. 
+```
+
