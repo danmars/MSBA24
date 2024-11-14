@@ -1,0 +1,133 @@
+---
+title: "M2_Assignment"
+author: "Danni Martin"
+date: "11/7/2024"
+format: pdf
+editor: visual
+---
+
+## Q2 Normal Distribution
+
+### Q2.1 Generating Random Numbers
+
+Use the rnorm() function and set.seed(10) to generate 25 numbers drawn from a normal distribution with a mean of 50 and a standard deviation of 5. Save the numbers in an object called Numbers. Include the code, output, and explanation below.
+
+```{r}
+# Use set.seed(10) per instructions and to ensure consistent results.
+set.seed(10)
+
+# Assign rnorm() ouput to 'Numbers'. Include parameters to generate 25 numbers with a mean of 50 and a standard deviation of 5.
+Numbers <- rnorm(25, 50, 5)
+
+# Output.
+print(Numbers)
+```
+
+### Q2.2 Mean and Standard Deviation
+
+Refer to Question Q2.1. What is the mean and standard deviation of the 25 numbers included in the Numbers object? Select the closest solution.
+
+```{r}
+mean <- mean(Numbers)
+sd <- sd(Numbers)
+
+print(mean)
+print(sd)
+
+```
+
+### Q2.3 Probability
+
+Refer to Question Q2.1 and the Numbers object. Using the Numbers object, write code below that calculates the probability that a random number from the distribution is between 46 and 54. What is the probability? Include the code, output, and explanation below.
+
+```{r}
+# Using the Numbers object and pnorm, find the cumulative probabilities of a number being less or equal to 54 and 46 respectively. Subtract the two probabilities to find the probability of a number being between 46 and 54.
+ prob <- pnorm(54, mean(Numbers), sd(Numbers)) - pnorm(46, mean(Numbers), sd(Numbers))
+
+#Output.
+print(prob)
+
+```
+
+### Q2.4 Large Numbers
+
+Use the rnorm() function and set.seed(10), to generate 10,000 numbers drawn from a normal distribution with a mean of 50 and a standard deviation of 5. Save the result in an object called Numbers2. Calculate the mean and standard deviation once again. What is the mean and standard deviation?
+
+```{r}
+set.seed(10)
+Numbers2 <- rnorm(10000, 50, 5)
+
+(mean(Numbers2))
+(sd(Numbers2))
+
+```
+
+### Q2.5 Comparison
+
+Reflect on the answer you gave to Question Q2.2. How do your results from Q2.4 compare to those from Q2.2? How can you explain this difference? Provide the answer below.
+
+> Numbers2 mean and SD are closer to the set parameters than Numbers. This is aligned with the 'Law of large numbers' which states that the sample average will become closer to the population average, or 'true' average, as the sample size increases. In theory, this is because the sample becomes more representative as it becomes larger.
+
+## Q3 Buffet
+
+Suppose you own a buffet restaurant and are trying to determine a reasonable price of admission. Customers vary in their appetites and are classified as follows:
+
+Peckish Patrons (10%): Customers with a low appetite are like little munchie minions, nibbling on their food as if it were a mere appetizer. Hungry Hooligans (50%): Customers with a medium appetite are like fierce fork fighters, ready to take on a substantial meal. Ravenous Rascals (40%): Customers with a high appetite are like unstoppable feast fanatics, hungry enough to devour the entire menu. They come to the restaurant with an appetite rivaling a medieval banquet.
+
+### Q3.1 Sampling
+
+Use the sample() function and set.seed(10) to generate 150 customers drawn with the probabilities given. That is, approximately 10% Peckish Patrons, 50% Hungry Hooligans, and 40% Ravenous Rascals. You can use the labels "PP", "HH", and "RR", respectively to populate your vector. Save the outcome in an object called Customers. Include the code below.
+
+```{r}
+# Assigns labels and probabilities to vectors.
+labels <- c('PP', 'HH', 'RR')
+probs <- c(0.1, 0.5, 0.4)
+
+# Set seed.
+set.seed(10)
+
+# Use sample function to generate 150 customers with above vectors.
+# Assign sample to 'Customers'.
+Customers <- sample(labels, size = 150, replace = TRUE, prob = probs)
+
+```
+
+### Q3.2 Loops and Conditionals
+
+Assume that Peckish Patrons consume between 1-2 plates of food, Hungry Hooligans between 2-4, and Ravenous Rascals between 4-8. Create another object in R that simulates the number of dishes each customer consumes and call this object Dishes. Use the uniform distribution (rdunif() from the extraDistr package), a for loop, and conditionals to simulate the number of dishes. The object dishes should have 150 integers that range between one and eight. Include the code below.
+
+```{r}
+library(extraDistr)
+Dishes <- c()
+
+for (i in Customers) {
+  if (i == 'PP') {
+    Dishes <- c(Dishes, rdunif(1, 1, 2))
+  } else if (i == 'HH') {
+    Dishes <- c(Dishes, rdunif(1, 2, 4))
+  } else {
+    Dishes <- c(Dishes, rdunif(1, 4, 8))
+  }
+}
+
+# Check.
+length(Dishes)
+
+```
+
+### Q3.3 Cost
+
+Now assume that the cost of each dish of food is \$6. Create an object called Cost that records the cost for each of the 150 simulated customers. Include the code below.
+
+```{r}
+Cost <- Dishes * 6
+
+```
+
+### Q3.4 Breakeven
+
+Finally, estimate the profit per customer by finding the difference between the admission price (you are free to set the initial value) and the average cost per customer. What is the approximate integer price that allows the buffet to break even? Select the price that is closest to a zero profit.
+
+```{r}
+mean(Cost)
+```
