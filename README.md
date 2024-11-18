@@ -13,6 +13,10 @@
 - https://fable.tidyverts.org/
 
 ### Python:
+- [The Python Guru](https://thepythonguru.com/)
+- [A Byte of Python](https://python.swaroopch.com/)
+- [Hands On Data Analysis with Pandas](https://github.com/stefmolin/Hands-On-Data-Analysis-with-Pandas)
+- [Guide to NumPy](https://web.mit.edu/dvp/Public/numpybook.pdf)
 
 
 ### Statistics:
