@@ -1,0 +1,113 @@
+---
+title: "M3_Assignment"
+author: "Danni Martin"
+date: "11/14/2024"
+format: pdf
+editor: visual
+---
+
+## Q2 The AMA
+
+The American Medical Association must determine how many rooms to reserve six months before its annual convention. Currently, the AMA can reserve rooms at \$150 per room. The AMA believes the number of doctors attending the convention will be normally distributed with a mean of 5000 and a standard deviation of 1000. If the number of people attending the convention exceeds the number of rooms reserved, extra rooms must be reserved at \$250 per room.
+
+### Q2.1 Basic Model
+
+Write code below that captures the inputs, decision variables and random variables of the model. Name the object for the decision variable num_reservations and set its value to 5,000. The inputs should be called regular_cost, and late_cost (both are per room). Finally, the random variable should be called attendance and 10,000 numbers should be generated from the normal distribution with the seed set at 10.
+
+```{r}
+#Decision Variable
+num_reservations <- 5000
+
+#Inputs
+regular_cost <- 150
+late_cost <- 250
+
+#Random Variable
+set.seed(10)
+n <- 10000
+attendance <- rnorm(n, 5000, 1000)
+
+hist(attendance)
+
+```
+
+### Q2.2 Extra Rooms
+
+Create an object with an empty vector called extra_rooms to record the number of extra rooms needed. Use a for loop to populate the vector by comparing the attendance and num_reservations objects. This vector should have 10,000 elements. Include the code below:
+
+```{r}
+extra_rooms <-c()
+for (i in 1:n) {
+  extra_rooms <- pmax(0, round(attendance - num_reservations))
+}
+
+```
+
+### Q2.3 Reservation Cost
+
+Create an object called reservation_cost using the rep() function with the times argument set to 10,000. Given the number of reservations and the regular cost, this vector should capture the 10,000 reservation costs. Include the code below:
+
+```{r}
+reservation_cost <- rep(num_reservations*regular_cost, n)
+```
+
+### Q2.4 Total Cost
+
+Create an object called late_reservation_cost that captures the late reservation cost given the number of extra rooms needed for each simulation. Use this object to create a final object that captures the total cost and call it total_cost.
+
+```{r}
+late_reservation_cost <- extra_rooms*late_cost
+
+total_cost <- reservation_cost + late_reservation_cost
+```
+
+### Q2.5 Statistics
+
+What is the approximate mean, and standard deviation of the total_cost object?
+
+```{r}
+mean(total_cost)
+sd(total_cost)
+```
+
+### Q2.6 Optimal Number of Rooms
+
+Use the model developed above to determine the number of rooms that should be reserved to minimize the expected cost to the AMA. Try possible values from 4000 to 5000 in increments of 100. You can use the model built in Q2.1-Q2.5 to answer this question by just changing the num_reservations value (no need to use a for loop). How many rooms should be reserved to minimize the average cost?
+
+```{r}
+###Did a for loop to verify results.
+# Define a range of reservation levels
+reservations <- seq(4000, 5000, 100)
+
+all_reservation_costs<-c()
+
+for (i in reservations) {
+  n <- 10000
+  v_reservations<-rep(i,n)
+  v_regular_cost<-rep(regular_cost,n)
+  v_late_cost<-rep(late_cost,n)
+
+  set.seed(10)
+  attendance <- rnorm(n, 5000, 1000)
+  
+  extra_rooms<-pmax(0, attendance - v_reservations)
+  
+  reservation_cost<-v_reservations*v_regular_cost
+  late_reservation_cost<-extra_rooms*v_late_cost
+  total_costs<-reservation_cost+late_reservation_cost
+  
+  all_reservation_costs<- c(all_reservation_costs,mean(total_costs))
+}
+
+results<-data.frame(reservations,all_reservation_costs)
+print(results)
+
+```
+```{r}
+plot(results)
+```
+
+### Q2.7 Discussion
+Provide your recommendation for the AMA below. Discuss how the mean attendance is a good/bad estimation of how many rooms should be reserved? Explain how your recommendation might be superior than just booking the mean attendance of 5000.
+
+I recommend booking 4700 rooms to minimize expected cost to the AMA.Though mean can be a helpful estimation, it can also be misleading because it does not account for the variability or distribution of attendance. By simulating thousands of scenarios based on a probability distribution, we can factor in uncertainty and better understand the range of outcomes and associated risks. 
