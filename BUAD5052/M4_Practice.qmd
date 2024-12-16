@@ -1,0 +1,176 @@
+---
+title: "M4_Practice"
+author: "Danni Martin"
+date: "11/18/2024"
+format: pdf
+editor: visual
+---
+
+## Avocado Prices
+
+Chilango’s Kitchen specializes in tacos and burritos that are made to order in front of the customer. Guacamole is the perfect pairing to their delicious food and one of the restaurant’s best sellers. Their guacamole uses just six ingredients: avocados, lime juice, cilantro, red onion, jalapeño, and kosher salt. Because of its popularity, each restaurant goes through approximately five cases of avocados daily, amounting to more than 44,000 pounds annually. Chilango’s Kitchen wants you to provide insights on the price of avocados in California.
+
+The Hass Avocado BoardLinks to an external site. provides the data set which contains weekly retail scan data of U.S. retail volume (units) and price. Retail scan data comes directly from retailers’ cash registers based on actual retail sales of Hass avocados. The data reflects an expanded, multi-outlet reporting aggregating the following channels: grocery, mass, club, drug, dollar, and military. The average price of avocados in the table reflects a per unit (per avocado) cost, even when multiple units (avocados) are sold in bags. Other avocados (e.g., greenskins) are not included in this data.
+
+::: callout-note
+In general, the data is recorded weekly. However, there is an entry on 01/01/2018 that is right after 12/31/2017. This is a single observation that is not weekly. There are also missing dates from 12/02/2018–12/31/2018.
+:::
+
+### Inspecting the Data
+
+```{r}
+#Load tidyverse
+library(tidyverse)
+```
+
+```{r}
+#Load data
+avocado<-read_csv("https://jagelves.github.io/Data/avocado2020.csv")
+```
+
+```{r}
+#Preview data
+spec(avocado)
+```
+
+### Lubridate Package
+
+Designed to make working with date and time easier and more intuitve. Part of tidyverse.
+
+```{r}
+#Use lubridate to parse/coerce dates
+library(lubridate)
+avocado$date <- mdy(avocado$date)
+
+class(avocado$date)
+```
+
+### Piping and dplyr
+
+dplyr is commonly used with "piping." Generally speaking, "piping" allows us to chain functions. "Piping" (%\>% or \|\>) passes the object on the left of the pipe as the first argument in the function to the right of the pipe. We can illustrate this using the select() and arrange() functions.
+
+```{r}
+#Select() - select variables. 
+#Arrange() - sorts data in ascending order. 
+#Desc() - sorts data in descending order.
+
+avocado %>% select(c(average_price,geography)) %>%
+  arrange(desc(average_price)) %>% head(5)
+```
+
+```{r}
+#Filter out record that is not weekly. filter() chooses rows that meet a certain condition. 
+#Reassign filtered data to avocado.
+avocado %>% filter(date!=ymd("2018-01-01")) -> avocado
+```
+
+```{r}
+#California's average price for organic avocados between 2015-2018
+avocado %>% 
+  filter(geography=="California", type=="organic", 
+         year<=2018) %>%
+  select(date, average_price, geography) -> cali
+```
+
+```{r}
+#Standardize time intervals are important for timeseries. 
+#Confirm this using pull() and diff() function. Pull() vectorizes date variable, diff() returns the difference.
+cali %>% pull(date) %>% diff()
+```
+
+### Visualizing the data.
+
+To visualize the data, we will be using ggplot2. One of the main functions in ggplot2 is the aes() function. This function sets the plotting canvas and determines the mapping of variables. The geom_line() function specifies the type of plot. In time series, we will use the line plot regularly. Labels for the graph are easily set with the labs() function and there are plenty of themes available to customize your visualization. Below, the theme_classic() is displayed.
+
+```{r}
+ggplot(data=cali) + 
+  geom_line(mapping=aes(x=date,y=average_price, group=geography),color="black") +
+  theme_classic() + 
+  labs(x="",
+       y="Average Price", 
+       title="Organic Avocado Price in California",
+       subtitle="2015-2018") 
+```
+
+The average price of avocados in California increased during the period considered. It reached a maximum of about 2.60 in 2017 and a minimum of 1.10 in 2015. There is also a seasonal pattern with low prices at the beginning of the year and peaks mid-year. \### tsibbles tsibbles are defined by a time index (i.e., the date) that has a standard interval (i.e., days, weeks, months, and years) and keys (i.e., dimensions or observational units).
+
+```{r}
+library(fpp3)
+avocado %>%
+  as_tsibble(key=c(type, geography),
+           index=date, regular=T) %>%
+  filter_index("2015-01-04"~"2018-12-02")-> avocadots
+```
+
+```{r}
+#Filter for California
+avocadots %>% filter(geography=="California", type=="organic") %>%
+  select(date,geography,average_price) -> calits
+```
+
+### Time Series Decomposition
+
+```{r}
+# Season trend decomposition using LOESS (STL)
+calits %>%
+  model(STL(average_price~trend(window=199)+
+              season(window=51), robust=TRUE)) %>%
+  components() %>% autoplot()+ theme_classic()
+```
+
+## Practice Exercises
+
+### Question 1
+
+Strawberry Price data. Graph the time series using ggplot2 and conduct time series decomposition using the fpp3 package.
+
+```{r}
+# Import libraries.
+library(tidyverse)
+library(fpp3)
+
+# Load data.
+SB<-read_csv("https://jagelves.github.io/Data/StrawberryPrice.csv")
+
+# Create tsibble.
+SB %>% mutate(Year=year(mdy(DATE))) %>% #Coerce date variable and extract year.
+  mutate(Price=as.double(Price)) %>%  #Coerce Price to double.
+  group_by(Year) %>% #Group by year.
+  summarise(APrice=mean(Price, na.rm=T)) %>% #Summarize by average.
+  tsibble(index=Year)-> SB_ts
+
+```
+
+```{r}
+# Graph using autoplot() command.
+library(ggthemes)
+SB_ts %>% autoplot(.vars=APrice) +
+  theme_clean() +
+  labs(title="Yearily Average Price of Strawberries",
+       y="",x="")
+```
+
+```{r}
+#Decomposition
+SB_ts %>% model(STL=STL(APrice ~ trend() + season(), 
+                        robust=T)) %>% 
+  components() %>% autoplot() + theme_classic()
+```
+
+### Question 2
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
