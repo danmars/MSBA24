@@ -1,0 +1,106 @@
+---
+title: "M6_Assignment"
+author: "Danni Martin"
+date: "12/2/2024"
+format: pdf
+editor: visual
+---
+
+## Q2 Netflix Subscribers
+
+### Q2.1 Loading Packages and Data
+Load the fpp3 and tidyverse packages. Create an object that captures the data called Netflix.
+
+```{r}
+library(fpp3)
+library(tidyverse)
+
+Netflix <- read_csv("https://jagelves.github.io/Data/Netflix.csv")
+```
+### Q2.2 Creating a tsibble
+Use piping to:
+- coerce the Quarter variable to a date that captures the year and quarter.
+- coerce the data to a tsibble
+Name the resulting tsibble Netflix_ts.
+```{r}
+Netflix %>%
+  mutate(Quarter=yearquarter(Quarter)) %>%
+  as_tsibble(index=Quarter) -> Netflix_ts
+```
+
+### Q2.3 Plot
+Use the autoplot() function to plot the Subscriber time series. Add a title that reads "Netflix World Wide Subscribers (Millions)", and a subtitle that reads "2013 Q1 to 2023 Q2". 
+```{r}
+Netflix_ts %>% autoplot(Subscribers) + theme_classic() +
+  labs(title= "Netflix World Wide Subscribers (Millions)", 
+       subtitle = "2013 Q1 to 2023 Q2")
+```
+### Q2.4 Test and Train Sets
+Use the filter_index() function to create train and test sets. Name the sets train_net and test_net, respectively. The train set should go from the first quarter of 2013 to the fourth quarter of 2021. The test set should go from the first quarter of 2022 to the second quarter of 2023.
+```{r}
+train_net <- filter_index(.data=Netflix_ts,"2013 Q1"~"2021 Q4")
+test_net <- filter_index(.data=Netflix_ts,"2022 Q1"~"2023 Q2")
+```
+
+### Q2.5 CV
+Perform cross-validation using the train set. Use the stretch_tsibble() function with the .init argument set to 12 and the .step argument set to four. The following models should be estimated:
+
+- ETS with additive error, damped additive trend, and additive seasonality.
+- ETS with no arguments. Algorithm.
+- TSLM with trend and trend squared.
+- TSLM with trend, trend squared, and seasonality.
+Forecast four periods and test accuracy against the test set.
+```{r}
+library(gt)
+train_net %>% stretch_tsibble(.init = 12, .step=4) %>%
+  model(
+    DAMPEDS=ETS(Subscribers ~ error("A") + trend("Ad") + season("A")),
+    ALGO=ETS(Subscribers),
+    LS = TSLM(Subscribers ~ trend()+I(trend()^2)),
+    LSS = TSLM(Subscribers ~ trend()+I(trend()^2)+season()))%>%
+  forecast(h = 4) %>%
+  accuracy(test_net)
+```
+
+### Q2.6 Best Model
+Refer to the table constructed in Q2.5. What is the best model according to the RMSE?
+```{r}
+# DAMPEDS - ETS(A,Ad,A)
+```
+
+### Q2.7 Fit Object
+Use the entire data (Netflix_ts) to create an object called fit that estimates only the top ETS model and the top TSLM by RMSE. Refer to the table in Q2.5. Include your code below:
+```{r}
+fit <- Netflix_ts %>%
+  model(DAMPEDS=ETS(Subscribers ~ error("A") + trend("Ad") + season("A")),
+        LSS = TSLM(Subscribers ~ trend()+I(trend()^2)+season()))
+        
+```
+
+### Q2.8 Information Criterion
+Use the fit object to obtain the AIC, AICc, and BIC. You can start with the fit object and pipe to the glance() function to do this. Pipe one more time to select only .model, AIC, AICc, and BIC.
+```{r}
+fit %>%
+  glance() %>%
+  select(".model", "AIC", "AICc", "BIC")
+```
+
+### Q2.9 Forecast
+Use the fit object to forecast four quarters into the future (h=4). Upload a screenshot of the forecast output (table not plot) that includes the model used, the quarter, the distribution of the forecast, and the mean.
+```{r}
+fit %>%
+  forecast(h=4)
+```
+
+### Q2.10 Plot2
+Upload a screenshot of Netflix subscribers and the ETS and LSTM forecasts below. The title should be "Netflix Subscribers", the subtitle "2013 Q1 to 2024 Q2 (estimated)", include 90% prediction intervals, and omit the x and y labels.
+```{r}
+fit %>%
+  forecast(h = 4) %>%
+  autoplot(Netflix_ts, level=90)+
+  labs(x="", y="",
+       title = "Netflix Subscribers",
+       subtitle = "2013 Q1 to 2024 Q2 (estimated)") + theme_classic()
+```
+
+
