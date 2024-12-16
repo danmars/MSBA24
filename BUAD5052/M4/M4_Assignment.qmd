@@ -1,0 +1,81 @@
+---
+title: "M4_Assignment"
+author: "Danni Martin"
+date: "11/18/2024"
+format: pdf
+editor: visual
+---
+
+## Q2 Home Prices
+
+### Q2.1 Loading packages and data
+
+Write code below that loads fpp3, tidyverse packages. Then load HomePrices.csv data set with the read_csv() function and save it in an object called Homes. Use the glimpse() function to preview the data. Include the code below:
+
+```{r}
+#| warning: false
+library(tidyverse)
+library(fpp3)
+
+Homes <- read_csv("https://jagelves.github.io/Data/HomePrices.csv")
+
+glimpse(Homes)
+```
+
+### Q2.3 Piping
+
+Start with the Homes object. Use the pipe operator %\>% to chain the following commands.
+
+-   filter the data so that only "two-bedroom" houses are included
+-   coerce the saledate variable to a date using the dmy() function. format the saledate variable to quarters by using the yearquarter() function.
+-   remove the bedrooms and type variables. You should include a pipe for each bullet point and save the result to a new object called h2.
+
+```{r}
+Homes %>%
+  filter(bedrooms == 2, type == "house") %>%
+  mutate(saledate = yearquarter(dmy(saledate))) %>%
+  select(saledate, Price) -> h2
+
+head(h2)
+```
+
+### Q2.4 tsibble
+
+Coerce the h2 tibble to a tsibble using the as_tsibble() function. Make sure you specify the correct index. Save the new tsibble in an object called h2_ts. Include your code below:
+
+```{r}
+h2_ts <- as_tsibble(h2, index=saledate)
+```
+
+### Q2.5 Plot
+
+Create a line plot of the Price variable using the ggplot() function. Add a title that reads "Quarterly Home Prices" and a subtitle that reads "2007 Q3 to 2019 Q3". Omit the x and y captions.
+
+```{r}
+ggplot(data=h2_ts) +
+  geom_line(mapping = aes(x=saledate, y=Price), color='black') +
+  theme_classic() +
+  labs(x="",
+       y="",
+       title="Quarterly Home Prices",
+       subtitle="2007 Q3 to 2019 Q3")
+```
+
+### Q2.6 STL
+
+Perform an STL decomposition using the model() and STL() functions. Set the window argument to 11 for the trend(). Set 'periodic' for the window argument of the season() function.
+
+```{r}
+h2_ts %>%
+  model(STL(Price~trend(window=11)+season(window='periodic'), robust=TRUE)) %>%
+  components() %>% autoplot() + theme_classic()
+```
+
+### Q2.7 STL Components
+
+```{r}
+h2_ts %>%
+  model(STL(Price~trend(window=11)+season(window='periodic'), robust=TRUE)) %>%
+  components() -> h2_components
+h2_components
+```
