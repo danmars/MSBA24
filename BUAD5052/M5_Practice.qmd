@@ -1,0 +1,346 @@
+---
+title: "M5_Practice"
+author: "Danni Martin"
+date: "11/25/2024"
+format: pdf
+editor: visual
+---
+
+## Time Series II - Benchmarks
+
+Benchmarks serve as a baseline/reference point when comparing performance of other models.
+
+### Three Principles of Forecasting:
+
+1.  All forecasts are wrong, though some are useful.
+2.  The longer the forecast, the more wrong it is.
+3.  Aggregate forecasts tend to be more accurate.
+
+### Benchmarks
+
+1.  **Naive** - value of future period will equal value of preceding period. ie uses previous observation to predict the future.model(NAIVE(data))
+2.  **Drift** - variant of Naive method. Forecasts increase or decrease depending on the average change seen in historical data. model(RW(data \~ drift())). RW = Random Walk
+3.  **Mean** - future values are equal to the average of the historical data. model(MEAN(data))
+4.  **Least Squares** - Type of linear regression analysis based on minimizing the sum of squares of the residuals. model(TLSM())
+
+::: callout-note
+Use model() function to run benchmarks. Object will be saved as a mable. (model table)
+:::
+
+### Accuracy Measures
+
+1.  **MSE** - measures the accuracy of model relative to observed values.
+2.  **RMSE** - square root of MSE. Used more often because it is measured in the same units of the response variable.
+3.  **AIC** - penalizes model complexity and rewards fit. Balance between model fit and number or parameters
+4.  **AICc** - AIC adjustment for smaller sample sizes
+5.  **BIC** - penalizes model complexity to a greater degree than AIC. Based on Baeysian principles.
+
+### Cross Validation
+
+Cross Validation is a method to avoid overfitting. Overfitting occurs when the model is too flexible; therefore, model fitted to noise instead of underlying pattern.
+
+## Average Price of Avocados
+
+### Modeling
+
+```{r}
+# Load the data.
+library(tidyverse) #data wrangling
+library(fpp3) #handle time series data
+
+cali<-read_csv("https://jagelves.github.io/Data/CaliforniaAvocado.csv")
+```
+
+```{r}
+# Coerce data into tsibble. Select date and average price. Set index to date.
+# Filter to specified date range.
+cali %>%
+  select(date,average_price) %>%
+  as_tsibble(index=date) %>%
+  filter_index("2015-01-04"~"2018-06-02") -> calits_train 
+```
+
+```{r}
+# Use model function to apply four benchmarks.
+fit <- model(calits_train,mean=MEAN(average_price),
+              Naive=NAIVE(average_price),
+              Drift=RW(average_price~drift()),
+              LS=TSLM(average_price~date))
+```
+
+```{r}
+# Use coef() to explore coefficients of model. Format using gt package.
+library(gt) #customize tables
+
+coef(fit) %>% 
+  gt() %>% 
+  cols_align("center") %>% 
+  tab_header(title = md("**Model Coefficients For The Avocado Data**")) %>% 
+  tab_style(
+    locations =cells_column_labels(columns = everything()),
+  style = list(cell_borders(sides = "bottom", weight = px(3)),
+    cell_text(weight = "bold"))) %>% 
+  fmt_number(columns =c(statistic,estimate,std.error,p.value),
+             decimals = 4)
+```
+
+```{r}
+# Visualize.
+# Red - Least Squares
+# Blue - Mean
+# Orange - Naive
+
+calits_train %>% autoplot(average_price) + theme_classic() + 
+  geom_line(aes(y = .fitted), col="red",
+            data = augment(fit) %>% filter(`.model`=="LS")) +
+geom_line(aes(y = .fitted), col="orange",
+            data = augment(fit) %>% filter(`.model`=="Naive")) +
+  geom_line(aes(y = .fitted), col="blue", linetype="dashed",
+            data = augment(fit) %>% filter(`.model`=="mean")) +
+  labs(y="", title= "California's Average Price Of Avocados",
+       subtitle = "Jan 4, 2015 - May 27, 2018",
+       x="")
+```
+
+### Model Fit
+
+Model fit is assessed by comparing fitted values against observed values. Smaller accuracy values equates to higher accuracy.
+
+**Mean Squared Error (MSE)** - average squared difference between predicted values and actual values, i.e. average squared error. Used for assessing accuracy.
+
+**Root Mean Squared Error (RMSE)** - square root of MSE.
+
+```{r}
+accuracy(fit) %>% 
+  gt() %>%
+  cols_align("center") %>% 
+  tab_header(title = md("**Model Fit**")) %>% 
+  tab_style(locations = cells_column_labels(columns = everything()),
+  style = list(cell_borders(sides = "bottom", weight = px(3)),
+    cell_text(weight = "bold"))) %>% 
+  fmt_number(columns =c(ME,RMSE,MAE,MPE,MAPE,MASE,RMSSE,ACF1),
+             decimals = 2) %>% 
+  tab_style_body(
+    style = cell_fill(color="lightgreen"),
+    values = "Naive",
+    targets ="row")
+```
+
+### Forecast
+
+```{r}
+# Forecast series using forecast(). Specify number of periods (h) as 27 weeks.
+calits_fc <- fit %>% forecast(h=27)
+```
+
+```{r}
+# Create graph with the forecast and training set using autoplot() and autolayer() functions.
+# Set argument level null to omit prediction intervals.
+calits_fc %>% autoplot(level=NULL) + theme_classic() + 
+  autolayer(calits_train, average_price) +
+  labs(y="", title= "California's Forecasted Average Price Of Avocados",
+       subtitle = "Jan 4, 2015 - Dec 2, 2018",
+       x="")
+```
+
+### Overfitting
+
+Occurs when the model is too flexible. This is why we split data into a training and test set.
+
+```{r}
+# Create training and test sets.
+cali %>%
+  as_tsibble(key=geography,
+             index=date, regular=T) %>%
+  filter_index("2018-06-02"~"2018-12-02") -> calits_test
+
+cali %>% as_tsibble(index=date) %>% 
+filter_index(.~"2018-12-02") -> calits 
+```
+
+```{r}
+# Plot the training set, forecast, and test set. 
+calits_fc %>% autoplot(level=NULL) + 
+  theme_classic() + 
+  autolayer(calits_train, average_price) + 
+  autolayer(calits_test, average_price)
+
+```
+
+```{r}
+# Evaluate accuracy.
+accuracy(calits_fc, calits_test) %>% select(-ACF1, RMSSE, MASE)
+```
+
+### Cross Validation
+
+Creating several training and test sets.
+
+```{r}
+# Set first three observations as training set. Estimate model and forecast fourth observation.
+# Forecast error is recorded and training set is adjusted to forecast nth observation.
+avocado_cv <- calits_train %>% 
+  stretch_tsibble(.init = 3, .step = 1)
+```
+
+```{r}
+avocado_cv %>%
+  model(Mean=MEAN(average_price),
+        Naive=RW(average_price),
+        Drift=RW(average_price ~ drift()),
+        LS=TSLM(average_price~date)) %>%
+  forecast(h = 1) %>% accuracy(calits) %>% 
+  gt() %>%
+  cols_align("center") %>% 
+  tab_header(title = md("**Model Fit Cross Validation**")) %>% 
+  tab_style(locations = cells_column_labels(columns = everything()),
+  style = list(cell_borders(sides = "bottom", weight = px(3)),
+    cell_text(weight = "bold"))) %>% 
+  fmt_number(columns =c(ME,RMSE,MAE,MPE,MAPE,MASE,RMSSE,ACF1),
+             decimals = 2) %>% 
+  tab_style_body(
+    style = cell_fill(color="lightgreen"),
+    values = "Naive",
+    targets ="row")
+```
+
+### Other Accuracy Measures
+
+```{r}
+calits_train %>%
+  model(LS=TSLM(average_price~trend()),
+        ETS=ETS(average_price),
+        ARIMA=ARIMA(average_price))%>% 
+  glance() %>%
+  select('.model',"AIC","AICc","BIC")
+```
+
+## Practice Exercises
+
+### Question 1
+
+You’ve been tasked by the Japanese government with an important mission: forecast the country’s population by 2030. Your projections will help them effectively allocate resources and plan for future demands. To accomplish this, you’ll rely on population data available in the UNPOP file.
+
+Build two models using the TSLM approach. One with a simple linear trend and another with a quadratic trend (use I(trend()\^2) in R to incorporate a quadratic term). Compare the models by calculating their BIC (Bayesian Information Criterion), which will help you identify which model is more accurate. Provide your population estimate for 2030 using the model with the lower BIC. Based on your findings, determine whether Japan’s population is expected to increase or decrease by 2030.
+
+```{r}
+# Load data
+data<-read_csv("https://jagelves.github.io/Data/UNPOP.csv")
+
+# Create tsiblle. Filter Japan, select year, population, and ISO3 columns. Set index to yeat and key to ISO3.
+data %>% filter(ISO3=="JPN") %>% 
+  select(Year, Total_Population,ISO3) %>% 
+  as_tsibble(index=Year,key=ISO3) -> JAP_ts
+
+# Create models
+JAP_ts %>% model(TSLML=TSLM(Total_Population~trend()),
+                 TSLMQ=TSLM(Total_Population~trend()+I(trend()^2))) -> fit
+# Compare models using BIC. 
+fit %>% glance() %>%
+  select('.model',"AIC","AICc","BIC")
+
+# Forecast
+fit %>% forecast(h=7) %>% filter(.model=="TSLMQ")
+```
+
+Population is expected to decrease by roughly 123,000 people.
+
+### Question 2
+
+Fertility rates are crucial because they directly impact population growth and demographic structure. Low fertility rates can lead to an aging population, shrinking workforce, and challenges in sustaining economic growth and social welfare programs. To maintain a stable population in the U.S., the total fertility rate (TFR) needs to be around 2.1 children per woman (i.e. the replacement rate) If the TFR falls below this level for an extended period, the population may decline without immigration. Use the data found in the UNPOP file to plot the fertility rate for the US from 1960-2023 and the current replacement rate. What is the two year projected fertility rate when using a simple linear trend? How does this change when running the same model with a log transformation on the fertility variable?
+
+```{r}
+library(ggthemes)
+
+data<-read_csv("https://jagelves.github.io/Data/UNPOP.csv")
+
+data %>% filter(ISO3=="USA") %>% 
+  select(Year, Total_Fertility_Rate,ISO3) %>% 
+  as_tsibble(index=Year,key=ISO3) -> USFert
+
+USFert %>% 
+  autoplot(.vars=Total_Fertility_Rate) + theme_clean() +
+  geom_hline(yintercept = 2.1, lty=2) +
+  labs(title="Total Fertility Rate in the US.",
+       x="", y="")
+```
+
+```{r}
+# Linear trend shows fertility rate will decrease to 1.35. Log transformation shows a slower decrease, predicting a fertility rate of 1.54 by 2025.
+USFert %>% model(TSLML=TSLM(Total_Fertility_Rate~trend()),
+                 TSLMLog=TSLM(log(Total_Fertility_Rate)~trend())) -> fit
+
+fit %>% forecast(h=2) 
+```
+
+```{r}
+fit %>% forecast(h=2) %>% autoplot(level=NULL) +
+  autolayer(USFert,Total_Fertility_Rate) + theme_clean() +
+  autolayer(fit %>% augment() %>% filter(.model=="TSLML"),.fitted, col="red") +
+  autolayer(fit %>% augment() %>% filter(.model=="TSLMLog"),.fitted, col="#008080") +
+  labs(title="Total Fertility Rate in the US.",
+       x="", y="")
+```
+
+### Question 3
+
+Refer back to Problem 2, where your task is to forecast the fertility rate. For both the linear and logarithmic models you’ve developed, calculate the RMSE (Root Mean Squared Error) using the models’ fitted values. Use the augment() function to extract the residuals for each model, then square these residuals, average them, and finally take the square root. Based on the RMSE, determine which model provides a better fit for the data.
+
+```{r}
+# RMSE for linear model
+fit %>% augment() %>% filter(.model=="TSLML") %>%
+  pull(.resid) %>% `^`(2) %>% mean() %>% sqrt()
+```
+
+```{r}
+# RMSE for log model
+fit %>% augment() %>% filter(.model=="TSLMLog") %>%
+  pull(.resid) %>% `^`(2) %>% mean() %>% sqrt()
+
+```
+
+Log has lower RMSE; therefore, fits the model better.
+
+### Question 4
+
+Refer back to Problem 2, where your task is to forecast the fertility rate. For both the linear and logarithmic models you’ve developed, perform leave-one-out cross-validation. Initialize the cross-validation with eight observations and use a step of one. Which model performs better according to the RMSE?
+
+```{r}
+USFert %>%
+  stretch_tsibble(.init = 8, .step = 1) %>% 
+  model(TSLML=TSLM(Total_Fertility_Rate~trend()),
+        TSLMLog=TSLM(log(Total_Fertility_Rate)~trend())) %>% forecast(h=1) %>% accuracy(USFert) %>% 
+  select(.model,RMSE)
+```
+
+TSLMLog performs better.
+
+### Question 5
+
+Grocers Inc. purchases avocados at Richmond/Norfolk’s market price and sells them in their stores for \$1.5 each. Using the Avocado 2020-2023 \[Excel\] price data file, forecast the margin for the company over the next 4 weeks using a simple mean, the NAIVE, and simple trend. Use only data from W2 2023 onward.
+
+```{r}
+avo<-read_csv("https://jagelves.github.io/Data/avocado2020-2023.csv")
+
+avo %>% select(Geography,Date, Type, AveragePrice) %>% 
+  filter(Geography=="Richmond/Norfolk") %>% 
+  filter(Type=="Conventional") %>% 
+  mutate(Date=mdy(Date)) %>% 
+  mutate(Date=yearweek(Date)) %>% 
+  select(Date,AveragePrice) %>% 
+  distinct(Date, .keep_all = TRUE) %>% 
+  arrange(Date) %>% 
+  as_tsibble(index=Date) %>% 
+  filter_index("2023 W2"~.) -> avo_ts
+```
+
+```{r}
+avo_ts %>% model(MEAN=MEAN(AveragePrice),
+                 NAIVE=NAIVE(AveragePrice),
+                 TSLM=TSLM(AveragePrice~trend())) -> fit
+
+fit %>% forecast(h=4) %>% 
+  as_tibble() %>% 
+  select(Date,.model,.mean) %>% 
+  mutate(Margin=(1.5-.mean)/1.5)
+```
