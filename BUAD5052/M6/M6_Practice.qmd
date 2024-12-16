@@ -1,0 +1,388 @@
+---
+title: "M6_Practice"
+author: "Danni Martin"
+date: "12/2/2024"
+format: pdf
+editor: visual
+---
+
+## Time Series III - The ETS Model
+
+ETS - Error, Trend, Seasonality.
+
+### ETS Components
+
+ETS models build on simple exponential smoothing (SES). SES assigns more weight to more recent observations and gradually decrease for older observations. ie emphasizes more recent data points and gives less importance to older observations. Assumes recent observations are more relevant for predicting future values than older ones. Weighted average of past observations.
+
+SES does not account for trend or seasonality but can be modified with added components. For example, Holt's linear trend method can be added to account for linear trend.
+
+1.  **SES**: Simple exponential smoothing. Weighted average of past observations. Does not account for trend or seasonality.
+
+## Tesla's Deliveries
+
+Deliveries are a carefully watched number by Tesla shareholders and are the closest approximation of sales disclosed by the company. Additionally, Tesla’s deliveries are closely followed due to their impact on financial markets, the electric vehicle industry, innovation and disruption, production efficiency, and the growth of the EV market. The numbers serve as a key performance indicator for Tesla’s success and provide insights into the broader trends in the electric vehicle industry. Can we use the ETS model to forecast Tesla’s deliveries? \### The Data
+
+```{r}
+library(fpp3)
+
+# Create tsibble
+tesla<-tsibble(
+  period=yearquarter(c("2016:Q1","2016:Q2","2016:Q3","2016:Q4",
+                       "2017:Q1","2017:Q2","2017:Q3","2017:Q4",
+                       "2018:Q1","2018:Q2","2018:Q3","2018:Q4",
+                       "2019:Q1","2019:Q2","2019:Q3","2019:Q4",
+                       "2020:Q1","2020:Q2","2020:Q3","2020:Q4",
+                       "2021:Q1","2021:Q2","2021:Q3","2021:Q4",
+                       "2022:Q1","2022:Q2","2022:Q3","2022:Q4",
+                       "2023:Q1","2023:Q2")),
+  deliveries=c(14.8,14.4,24.5,22.2,
+               25,22,26.2,29.9,
+               30,40.7,83.5,90.7,
+               63,95.2,97,112,
+               88.4,90.7,139.3,180.6,
+               184.82,201.25,241.3,308.6,
+               310.5,254.7,343.8,405.3,
+               422.9,466.1),
+  index=period     # This is the time variable
+)
+```
+
+```{r}
+# Plot data. Observe exponential trend with some seasonality. Higher production in Q4 than other quarters.
+tesla %>% autoplot(.vars=deliveries) + theme_classic() +
+  labs(title= "Tesla Car Deliveries", 
+       subtitle = "Q1 2017 to Q2 2023") +
+  xlab("Quarter") + ylab(" ")
+```
+
+```{r}
+# STL to confirm trend and seasonality.
+tesla %>%
+  model(STL(deliveries~trend() + season())) %>%
+  components() %>% autoplot() + theme_classic()
+```
+
+### Models
+
+```{r}
+# Create training and test sets for models.
+train_tesla<-filter_index(.data=tesla,"2016 Q1"~"2021 Q4")
+test_tesla<-filter_index(.data=tesla,"2022 Q1"~"2023 Q2")
+```
+
+Five ETS Models: 1. SES - simple exponential smoothing with additive errors. 2. HOLT - Holt model with additive trend. 3. DAMPED - dampened trend model. 4. DAMPEDS - dampened trend model with seasonality. 5. ALGO - algorithmic function for selecting best ETS model.
+
+Other: 6. LS - simple least squares. 7. LSS - quadratic model with seasonality dummies.
+
+Components can be multiplicative (M) or additive (A). Trend components can be dampened (Ad or Md). Omitted components are specified as none (N).
+
+Model selection will be done via cross validation. Use strech_tsibble to accomodate CV.
+
+```{r}
+# Create models with specified components. 
+# For model selection/CV, .init set to 8 (first observations) and .step equals 4.
+
+library(gt)
+train_tesla %>% stretch_tsibble(.init = 8, .step=4) %>%
+  model(
+    SES=ETS(deliveries ~ error("A") + trend("N") + season("N")),
+    HOLT=ETS(deliveries ~ error("A") + trend("A") + season("N")),
+    DAMPED=ETS(deliveries ~ error("A") + trend("Ad") + season("N")),
+    DAMPEDS=ETS(deliveries ~ error("A") + trend("Ad") + season("A")),
+ALGO=ETS(deliveries),
+LS = TSLM(deliveries ~ trend()+I(trend()^2)),
+LSS = TSLM(deliveries ~ trend()+I(trend()^2)+season()))%>%
+  forecast(h = 4) %>%
+  accuracy(tesla) %>% select(-"ACF1") 
+```
+
+```{r}
+# DAMPEDS and LSS perform consistently well, as there seems to be an exponential trend and some seasonality. Save models to fit object.
+fit <- tesla %>%
+  model(
+    DAMPEDS = ETS(deliveries ~ error("A") + trend("Ad") + season("A")),
+    LSS = TSLM(deliveries ~ trend()+I(trend()^2)+season())
+  )
+```
+
+```{r}
+# Can use tidy() or coef() to retrieve coefficients.
+tidy(fit) %>% filter(.model=="LSS") %>%
+  select(-".model")
+```
+
+```{r}
+# Plot models.
+# Blue - LSS
+# Red - DAMPEDS
+
+tesla %>% autoplot(deliveries, lwd=1.2, alpha=0.5) + theme_classic() + 
+  geom_line(aes(y = .fitted), col="blue",
+            data = augment(fit)  %>% filter(`.model`=="LSS")) +
+              geom_line(aes(y = .fitted), col="red",
+            data = augment(fit) %>% filter(`.model`=="DAMPEDS")) + 
+  labs(title= "Tesla Car Deliveries Fitted Values", 
+       subtitle = "Q1 2017 to Q2 2023") +
+  xlab("Quarter") + ylab(" ")
+```
+
+### Information Criterion
+
+```{r}
+# Assess models using accurage models.
+# LSS performs the best. ALGO also performs well, as it is designed to minimize AIC.
+train_tesla %>%
+  model(
+    SES=ETS(deliveries ~ error("A") + trend("N") + season("N")),
+    HOLT=ETS(deliveries ~ error("A") + trend("A") + season("N")),
+    DAMPED=ETS(deliveries ~ error("A") + trend("Ad") + season("N")),
+    DAMPEDS=ETS(deliveries ~ error("A") + trend("Ad") + season("A")),
+ALGO=ETS(deliveries),
+LS = TSLM(deliveries ~ trend()+I(trend()^2)),
+LSS = TSLM(deliveries ~ trend()+I(trend()^2)+season())) %>% 
+  report()  %>%
+  select('.model',"AIC","AICc","BIC")
+```
+
+### Forecasts
+
+```{r}
+# Create forecast.
+library(gt)
+fit %>%
+  forecast(h = 4) %>% select(-".model") -> deliveries_fc
+deliveries_fc
+
+```
+
+```{r}
+# Plot forecast with 95% CI. Longer period forecasts have more uncertainty.
+fit %>%
+  forecast(h = 4) %>%
+  autoplot(tesla, level=95)+
+  labs(x="Quarter", y="",
+       title = "Tesla Car Deliveries Forecasts",
+       subtitle = "Q1 2017 to Q2 2023") + theme_classic()
+```
+
+### Scenarios
+
+On October 9, 2023, Tesla announced 435,059 deliveries for Q3, signaling strong performance. However, during the previous earnings call, Tesla had already cautioned investors about potential delivery impacts due to planned factory shutdowns and upgrades. These shutdowns are necessary to retool production lines for their upcoming vehicles, the Highland Model 3 and Cybertruck. Interestingly, a similar factory shutdown occurred in Q2 2022, giving us valuable historical data to make more precise predictions.
+
+To factor in the effect of these shutdowns, we can introduce a dummy variable, where we assign a value of 1 during shutdown quarters and 0 otherwise. Here’s the code:
+
+```{r}
+# Create dummy variable for scenario. Down variable captures factory shutdown impact.
+tesla<-mutate(tesla,
+                Down=case_when(
+                  period==yearquarter("2022 Q2") ~ 1,
+                                       TRUE ~ 0))
+```
+
+```{r}
+# Incorporate new variables in TLSM model.
+fit <- tesla %>%
+  model(
+    LSS = TSLM(deliveries~trend()+
+                 I(trend()^2)+season()+Down)
+  )
+```
+
+```{r}
+# Create two scenarios: factory shutdown versus uninterrupted.
+Down_Scenario <- scenarios(
+  Factory_Down = new_data(tesla, 4) |>
+    mutate(Down=rep(1,4)),
+  Factory_Up = new_data(tesla, 4) |>
+    mutate(Down=rep(0,4)),
+  names_to = "Scenario")
+```
+
+```{r}
+# Plot.
+tesla %>%
+  autoplot(deliveries) + 
+  autolayer(forecast(fit,new_data=Down_Scenario),
+            level=NULL)+ theme_classic() +
+  labs(x="Quarter", y="",
+       title = "Tesla Car Deliveries Forecasts",
+       subtitle = "Scenario Forecast") + theme_classic()
+```
+
+```{r}
+fit %>% forecast(new_data=Down_Scenario) %>%
+  hilo(95) %>% unpack_hilo("95%") %>%
+  as_tibble() %>%
+  select(Down,period,.mean,`95%_lower`,`95%_upper`) %>%
+  gt() %>% fmt_number(columns=c(.mean,
+                       `95%_lower`,`95%_upper`),
+             decimals = 2)
+```
+
+## Practice Exercises
+
+### Question 1
+
+Tesla is rapidly expanding its footprint in renewable energy and energy storage solutions, with innovations like the Powerwall, Megapack, and Solar Roof driving the company forward. Tesla’s energy storage systems are gaining traction in both residential and large-scale utility markets, while its vision of Virtual Power Plants (VPPs) is revolutionizing how power is managed and distributed.
+
+Tesla is forecasting strong growth in energy deployment as they continue to scale their products and enter new markets. You have been asked to help forecast Tesla Energy’s deployment for Q4 2024, using historical quarterly data on energy storage and solar deployments from previous years.
+
+You can find data on Tesla’s quarterly energy deployment (in megawatt hours) on the TeslaE \[Excel\] Download TeslaE \[Excel\]file.
+
+Forecast Tesla Energy’s deployment for the next four quarters using an ETS model with all additive terms, a TSLM model with linear trend and seasonality, and a TSLM model with quadratic trend and seasonality. Evaluate model performance using the information criterion. Finally, provide your forecast for the upcoming quarters with a graph. What is your expectation for next quarter? Does energy deployment go up or down relative to last quarter? What about when you compare to the same quarter last year?
+
+```{r}
+# Develop models.
+library(tidyverse)
+library(fpp3)
+library(ggthemes)
+rm(list=ls())
+storage<-read_csv("http://jagelves.github.io/Data/teslaE.csv")
+
+storage %>%
+  mutate(Date=yearquarter(Date)) %>%
+  as_tsibble(index=Date) -> storage_ts
+
+storage_ts %>%
+  model(LM=TSLM(EnergyStorage~trend()+season()),
+        LM2=TSLM(EnergyStorage~trend()+I(trend()^2)+season()),
+        ETS=ETS(EnergyStorage~error("A") + trend("A") + season("A"))) ->fit
+```
+
+```{r}
+# Information Criterion
+fit %>% glance() %>% select(.model,AIC:BIC)
+```
+
+```{r}
+# Forecast
+fit %>% forecast(h=4) %>%
+  hilo(95)
+```
+
+```{r}
+# Plot
+fit %>% forecast(h=4) %>% autoplot(level=NULL)+
+  autolayer(storage_ts,EnergyStorage) + theme_clean()
+```
+
+### Question 2
+
+Ice Cream Heaven is a small ice cream shop that has recently purchased a new ice cream-making machine to expand its production and meet increased demand during the summer months. The machine was installed in July 2023, and while it has helped boost production, it has also increased the shop’s energy consumption.
+
+The owners of Ice Cream Heaven want to estimate how much more they are paying in energy bills due to this new machine. They have historical monthly energy consumption data before and after the machine was installed and want to forecast what their energy consumption would have been without the machine to compare it with the actual values. Use the Electricity Bill \[Excel\] Download Electricity Bill \[Excel\]data and an ETS model with all additive components to provide your estimate.
+
+```{r}
+Elec<-read_csv("http://jagelves.github.io/Data/ElectricityBill.csv")
+
+Elec %>% mutate(Date=yearmonth(paste(Year, Month, sep = "-"))) %>% 
+  select(Date,`Bill Amount`) %>% 
+  as_tsibble(index=Date)-> Elec_ts
+
+pre<-Elec_ts %>% filter_index(.~"2023 Jul")
+
+pre %>% model(ETS=ETS(`Bill Amount`~error("A") + trend("A") + season("A"))) -> fitp
+
+fitp %>% forecast(h=12) %>% 
+  as_tibble() %>% select(Date,.mean) -> NoMach
+
+Elec_ts %>% filter_index("2023 Aug"~.) %>% 
+  as_tibble()  -> Mach
+  
+sum(Mach$`Bill Amount`- NoMach$.mean)
+```
+
+```{r}
+Elec_ts %>% autoplot(`Bill Amount`) + theme_clean() +
+  geom_vline(xintercept=as.Date("2023-06-01"), lty=2, col="blue") +
+  labs(x="", title="Electric Bill in Dollars",
+       subtitle="Forecast in blue") +
+  autolayer(forecast(fitp,h=12), level=NULL)
+
+```
+
+### Question 3
+
+Refer back to question 2, where your task is to estimate the extra cost in energy of a machine. Use the entire data set and forecast as a scenario where the machine is kept and one where the machine is sold. Change the model to a TSLM with linear trend and seasonality. How much extra would the ice cream shop pay if they kept the machine?
+
+```{r}
+Elec_ts<-mutate(Elec_ts,
+                Down=case_when(
+                  Date>=yearmonth("2023 7") ~ 1,
+                  TRUE ~ 0))
+
+Elec_ts %>%
+  model(
+    LM2 = TSLM(`Bill Amount`~trend()+season()+Down)) -> fit2
+```
+
+```{r}
+Mach <- scenarios(
+  New_Mach = new_data(Elec_ts, 12) %>% 
+    mutate(Down=rep(1,12)),
+  Old_Mach = new_data(Elec_ts, 12) %>% 
+    mutate(Down=rep(0,12)),
+  names_to = "Scenario")
+```
+
+```{r}
+forecast(fit2,new_data=Mach) ->est
+as_tibble(est) %>% group_by(Down) %>% 
+  summarise(Sum=sum(.mean)) %>% pull(Sum) %>% diff()
+```
+
+```{r}
+Elec_ts %>%
+  autoplot(`Bill Amount`) + 
+  autolayer(forecast(fit2,new_data=Mach),
+            level=NULL)+ theme_classic() +
+  labs(x="Months", y="",
+       title = "Energy Consumption",
+       subtitle = "Scenario Forecast") + theme_clean()
+```
+
+### Question 4
+
+Delta Airlines relies heavily on maintaining high load factors (the percentage of seats filled on flights) to maximize profitability and optimize operational efficiency. Accurately forecasting load factors helps Delta plan routes, set prices, and allocate resources effectively.
+
+Delta has ask for you to forecast the load factor the next four periods using historical data and two different time series models: the ETS model (algorithmic) and the TSLM model (with seasonality and trend). By doing so, you will help Delta better anticipate future demand and optimize its flight operations.
+
+You can find data on the Airlines Load Factor \[Excel\] Download Airlines Load Factor \[Excel\]file. Evaluate both models based on their RMSE on the test set (January 2022 to December 2023). Choose the model with the lowest RMSE as the best method for forecasting. Using the chosen model, forecast Delta’s load factor for the next four months (January 2024 to April 2024).
+
+```{r}
+Load<-read_csv("http://jagelves.github.io/Data/AirlinesLoad.csv")
+
+Load %>% mutate(Date=yearmonth(paste(Year, Month, sep = "-"))) %>% 
+  filter(Airline=="Delta") %>% 
+  select(Date,LF_total) %>% as_tsibble(index=Date) -> Load_ts
+```
+
+```{r}
+Load_ts %>% filter_index("2022 Jan"~"2023 Dec") -> train
+Load_ts %>% filter_index("Jan 2024"~.) -> test
+```
+
+```{r}
+train %>% 
+  model(TSLM=TSLM(LF_total~trend()+season()),
+        ETS=ETS(LF_total)) -> fit
+
+fit %>% forecast(test) %>% 
+  accuracy(test) %>% select(.model,RMSE)
+```
+
+```{r}
+Load_ts %>% 
+  model(ETS=ETS(LF_total)) %>% 
+  forecast(h=4)
+```
+
+```{r}
+Load_ts %>% 
+  model(ETS=ETS(LF_total)) %>% 
+  forecast(h=4) %>% autoplot(level=95) +
+  autolayer(train,LF_total) + autolayer(test,LF_total,lty=2) +
+   theme_clean() + 
+  labs(title="Delta Airlines Load Factors",
+       x="",y="")
+```
