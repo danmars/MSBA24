@@ -1,0 +1,152 @@
+---
+title: "M7_Assignment"
+author: "Danni Martin"
+date: "12/9/2024"
+format: pdf
+editor: visual
+---
+
+## Q2 Electricity Usage
+### Q2.1 Loading Packages and Data
+Load the fpp3 and tidyverse packages. Save the data into an object called Usage.
+```{r}
+library(fpp3)
+library(tidyverse)
+Usage <-read_csv("https://jagelves.github.io/Data/ElectricityBill.csv")
+```
+### Q2.2 Date Variables
+The usage tibble has no date variable. Create a variable called date using the mutate(), yearmonth(), and seq() functions. To do this, wrap the seq() function with the yearmonth() function (i.e., the seq() function is inside the yearmonth() function). The arguments for the seq() function are as follows:
+
+* set the from argument to ymd("2021-06-01")
+* set the length.out argument to 38
+* set the by argument to "1 month"
+```{r}
+Usage %>%
+  mutate(date = yearmonth(seq(from = ymd("2021-06-01"), length.out = 38, by = "1 month"))) -> usage
+  
+```
+
+### Q2.3 Tsibble
+Use the usage tibble to create a tsibble that uses date as the index. Use piping to:
+
+Rename the Usage (kWh) to kwh
+Select the date and kwh variables.
+Store the result in an object called usage_ts using the assignment operator ->
+```{r}
+usage %>%
+  rename(kwh = `Usage (kWh)`) %>%
+  select(date, kwh) %>%
+  as_tsibble(index=date) -> usage_ts
+```
+
+### Q2.4 Plot
+Create a plot of the kWh variable in the usage_ts tsibble. Include a title that reads "Electric Usage" and use the theme_classic() function. Make no other modifications and upload a screenshot below:
+```{r}
+usage_ts %>% 
+  autoplot(kwh) + theme_classic() +
+  labs(title = "Electic Usage")
+  
+```
+
+### Q2.5 Test and Train
+Create test and training sets using the filter_index() function. The training set should start in July 2021 and end in April 2023. The rest of the data should be in the test set. Include the code below:
+```{r}
+usage_ts %>% filter_index("July 2021"~"April 2023") -> train
+usage_ts %>% filter_index("May 2023"~.) -> test
+
+```
+
+### Q2.6 Fit
+Create an object called fit that estimates the ARIMA(), ETS(), and a TSLM() model with trend() and seasonality() using the training set. No arguments (other than kwk) should be passed in the ARIMA or ETS models to allow the algorithm to choose the best model. Include your code below:
+```{r}
+fit <- model(train,ARIMA=ARIMA(kwh),
+              ETS=ETS(kwh),
+              LS=TSLM(kwh~trend()+season()))
+```
+
+### Q2.7 Accuracy
+Use the fit object to retrieve accuracy measures of the forecast relative to the test set (no cross-validation). Arrange the table in ascending order by RMSE. Upload a screenshot of the table below:
+```{r}
+fit %>% forecast() %>% accuracy(test) %>% arrange(RMSE)
+```
+
+### Q2.8 Information Criterion
+Use the fit object and the glance() function to retrieve the AIC, AICc and the BIC. Upload a screenshot of the output below:
+```{r}
+fit %>%
+  glance() %>%
+  select(".model", "AIC", "AICc", "BIC")
+```
+
+### Q2.9
+Use piping to complete the following steps. Start with the usage_ts object.
+
+Use the model() function to estimate the best model according to question Q2.7 and Q2.8.
+forecast four periods ahead (h=4)
+autoplot() with level=95
+autolayer() with usage_ts, title="Monthly Electric Usage in kWh", theme_classic(), and no captions for y or x axis.
+```{r}
+usage_ts %>%
+  model(LS=TSLM(kwh~trend()+season())) %>%
+          forecast(h=4) %>%
+          autoplot(level=95) +
+          theme_classic() +
+          autolayer(usage_ts) +
+          labs(title = "Monthly Electric Usage in kWh",
+               y="", x="")
+          
+  
+```
+## Q3 Update Forecast
+Update the Netflix data up to the current date by browsing the web. Use a time series forecasting method learned in class to provide a forecast of Netflic world-wide subscribers for the upcoming quarter.
+```{r}
+#Update Netflix data from web.
+Netflix <- read_csv("https://jagelves.github.io/Data/Netflix.csv")
+Netflix %>% add_row(Quarter="2024:Q3",Subscribers=282.72) -> Netflix
+tail(Netflix)
+```
+
+```{r}
+Netflix %>%
+  mutate(Quarter=yearquarter(Quarter)) %>%
+  as_tsibble(index=Quarter) -> Netflix_ts
+```
+
+```{r}
+
+```
+
+
+```{r}
+Netflix_ts %>% features(Subscribers, features = c(unitroot_kpss, unitroot_ndiffs)) 
+```
+
+```{r}
+Netflix_ts %>%
+  features(Subscribers, features = guerrero) %>% pull(lambda_guerrero) -> lambda
+
+Netflix_ts %>% autoplot(box_cox(difference(Subscribers), lambda))
+```
+
+```{r}
+Netflix_ts %>% 
+  autoplot(Subscribers) + theme_classic() +
+  labs(title = "Netflix World Wide Subscribers (Millions)")
+  
+```
+
+
+```{r}
+train_net <- filter_index(.data=Netflix_ts,.~"2021 Q4")
+test_net <- filter_index(.data=Netflix_ts,"2022 Q1"~.)
+```
+
+```{r}
+fit <- model(Netflix_ts,DAMPEDS=ETS(Subscribers ~ error("A") + trend("Ad") + season("A")))
+
+fit %>% forecast(h=1)
+```
+
+```{r}
+fit %>% glance()
+```
