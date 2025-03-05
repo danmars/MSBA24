@@ -1,0 +1,78 @@
+---
+title: "M2_BUAD5122"
+author: "Danni Martin"
+date: "1/19/2025"
+format: docx
+editor: visual
+---
+
+## Problem 1
+
+
+### A
+
+Use the lm() function to perform a simple linear regression with Sales as the response and Price as the predictor. Use the summary() function to print the results. Comment on the output in terms of 
+Is there a relationship between Sales and Price? If so, is the relationship positive or negative, how strong is the relationship?
+
+```{r}
+#Load data.
+Carseats <- read.csv("Carseats.csv", stringsAsFactors = TRUE)
+```
+
+Output suggests a significant negative relationship between Sales and Price.
+The strength of this relationship is moderate. Sales decreases as Price increases.
+```{r}
+#Simple linear regression on Sales and Price. 
+A_LM <- lm(Sales ~ Price, data = Carseats)
+summary(A_LM)
+```
+```{r}
+#Verify results.
+plot(Sales ~ Price, data = Carseats)
+cor.test(Carseats$Sales, Carseats$Price)
+```
+
+### B
+
+Use the lm() function to perform a multi-linear regression with Sales as the response and CompPrice, Income, Advertising, Population, Price, Age, and Education as potential predictors. You may want to try different combinations of the variables to check the significance of the model and significance of the predictor variables. Are all these predictors significant? If not, which of them are significant? Why?
+
+Output suggests only CompPrice, Income, Advertising, Price, and Age are significant predictors.
+Population and Education are not significant predictors.
+This can be determined by each variables' respective p-values.
+The p-value of the F-statistic is low, suggesting that the overall model is significant.
+
+```{r}
+#Multi-linear regression with Sales as the response and CompPrice, Income, Advertising, Population, Price, Age, and Education
+B_LM <- lm(Sales ~ CompPrice + Income + Advertising + Population + Price + Age + Education, data = Carseats)
+summary(B_LM)
+```
+
+### C
+
+Use the lm() function to perform a multi-linear regression with Sales as the response and Price, Urban, and US as predictor variables. Note that dummy variables are needed for the categorical variables Urban, and US. Are all these three significant, Why?
+
+Output suggests only Price and USYes are significant predictors, as indicated by their low p-values.
+UrbanYes is not a significant predictor.
+The p-value of the F-statistic is low, suggesting that the overall model is significant.
+
+```{r}
+#Multi-linear regression with Sales as the response and Price, Urban, and US as predictor variables
+C_LM <- lm(Sales ~ Price + Urban + US, data = Carseats)
+summary(C_LM)
+```
+
+### D
+Use the lm() function to perform a multi-linear regression with Sales as the response and CompPrice, Income, Advertising, Population, Price, Age, and Education as potential quantitative predictors and Urban, and US as categorical variables. Note that dummy variables are needed for the categorical variables. You may want to try different combinations of the variables to check the significance of the model and significance of the predictor variables. Are all these predictors significant? If not, which of them are significant? Why?
+
+Output suggests only CompPrice, Income, Advertising, Price, and Age are significant.
+Population, Education, UrbanYes, and USYes are not significant.
+This can be determined by the variables' low p-values.
+The p-value of the F-statistic is low, suggesting that the overall model is significant.
+
+```{r}
+#Multi-linear regression with Sales as the response and CompPrice, Income, Advertising, Population, Price, Age, and Education as potential quantitative predictors.
+#Urban, and US as categorical variables
+D_LM <- lm(Sales ~ . - ShelveLoc, data = Carseats)
+summary(D_LM)
+```
+

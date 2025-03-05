@@ -1,0 +1,104 @@
+---
+title: "M6_BUAD5122"
+author: "Danni Martin"
+date: "2/13/2024"
+format: docx
+editor: visual
+---
+
+## Problem 1
+
+The problem is on support vector approach. The data set you will use to complete the problem is provided below.
+
+In this problem, you will use support vector approaches in order to predict whether a given car gets high or low gas mileage based on the Auto data set.
+
+```{r}
+#Import libraries
+library(ISLR)
+library(e1071)
+```
+
+```{r}
+#Load dataset
+Auto <- ISLR::Auto
+head(Auto)
+```
+
+### A
+
+Create a binary variable that takes on a 1 for cars with gas mileage above the median, and a 0 for cars with gas mileage below the median.
+
+```{r}
+#Create binary variable
+Auto$mpg01 <- as.factor(as.numeric(Auto$mpg > median(Auto$mpg)))
+
+#Verify
+summary(Auto)
+```
+
+### B
+
+Use the e1071 library in R. Use the SVM() function and kernel = "linear" and a cost argument to fit a support vector classifier to the data with three different values of cost at cost = .01, 0.1, 5 individually and respectively, in order to predict whether a car gets high or low gas mileage.  
+
+```{r}
+#Linear SVM with cost = .01
+svm.01 <- svm(mpg01 ~., data = Auto, kernel = "linear", cost = .01)
+print(svm.01)
+```
+
+```{r}
+#Linear SVM with cost = .1
+svm.1 <- svm(mpg01 ~., data = Auto, kernel = "linear", cost = .1)
+print(svm.1)
+```
+
+```{r}
+#Linear SVM with cost = 5
+svm5 <- svm(mpg01 ~., data = Auto, kernel = "linear", cost = 5)
+print(svm5)
+```
+
+### C
+
+Use the tune() function and kernel = "linear" to report the cross-validation errors associated with different values of cost, use cost=c(0.01, 0.1, 5). Comment on your results.
+
+```{r}
+set.seed(1)
+#Linear
+tune_linear <- tune(svm, mpg01~., data = Auto, kernel = "linear", ranges = list(cost = c(.01, .1, 5)))
+summary(tune_linear)
+```
+
+Cost = 5.0 results in the lowest cross-validation error rate (2.05%), followed by cost = .10 (4.6%), and lastly cost = .01 (7.65%). Fewer observations were misclassified as cost increases. We also observe fewer support vectors as cost increases due to smaller margins.
+
+### D
+
+Now repeat (c) with tune(). This time using SVMs with radial kernels and polynomial kernels. For radial kernels, use gamma=c(2, 5) and cost=c(0.01, 0.1, 5), For polynomial kernels, use degree=c(2, 3) and cost=c(0.01, 0.1, 5). Comment on your results.
+
+```{r}
+set.seed(1)
+#Radial
+tune_radial <- tune(svm, mpg01 ~., data=Auto, kernel = "radial", ranges = list(cost = c(.01, .1, 5), gamma = c(2, 5)))
+summary(tune_radial)
+```
+
+Cost = 5 with gamma = 2 results in the lowest cross-validation error rate (13.5%), followed by cost = 5 with gamma = 5 (48.2%).
+Once again higher cost results in fewer misclassified instances; however, using a radial kernel results in a worst fit when compared to the linear kernel.
+
+```{r}
+set.seed(1)
+#Polynomial
+tune_poly <- tune(svm, mpg01 ~., data=Auto, kernel = "polynomial", ranges = list(cost = c(.01, .1, 5), degree = c(2, 3)))
+summary(tune_poly)
+
+```
+Using a polynomial kernel results in a cross-validation error rate of 55.1%, regardless of degree or cost. This suggests a very poor fit.
+
+The linear kernel performed better than the radial and polynomial kernels. This suggests that the data is linearly separable. The linear kernel model with cost = 5 performed the best overall. 
+
+
+```{r}
+
+```
+
+

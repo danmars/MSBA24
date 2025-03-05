@@ -1,0 +1,196 @@
+---
+title: "M5_BUAD5122"
+author: "Danni Martin"
+date: "2/9/2025"
+format: docx
+editor: visual
+---
+
+## Problem 1
+
+In this individual assignment, you will complete one problem using R Studio. You will then prepare a word document that contains your code, print out of the results, and your interpretation of the results. The problem is on classification tree. The data set you will use to complete the problem is provided below. This problem involves the OJ data set.
+
+Details regarding the OJ dataset can be found here: https://rdrr.io/cran/ISLR/man/OJ.html
+
+```{r, warning=FALSE}
+#Import libraries
+library(caTools)
+library(tree)
+library(randomForest)
+library(gbm)
+
+#Load dataset
+OJ <- read.csv("OJ.csv", stringsAsFactors = TRUE)
+
+#Verify
+summary(OJ)
+
+```
+
+### A
+
+Create a training set containing a random sample of 800 observations, and a test set containing the remaining observations. Use set.seed(2) for the consistent of the datasets. Choose Purchase as the response and the other variables as predictors.
+
+```{r}
+#Set seed
+set.seed(2)
+
+#Create training/test set
+train_sample <- sample(1:nrow(OJ), 800)
+train <- OJ[train_sample, ]
+test <- OJ[-train_sample, ]
+
+## See B for selecting Purchase as response and other variables as predictors.
+```
+
+### B
+
+Use the tree() function to fit a classification tree to the training data, Use the summary() function to produce summary statistics about the tree, and describe the results obtained. Create a plot of the tree and interpret the results. How many terminal nodes does the tree have?
+
+
+```{r}
+#Set seed
+set.seed(2)
+
+#Fit tree, Purchase as response and all other variables as predictors.
+tr <- tree(Purchase ~., data = train)
+
+#Summary
+summary(tr)
+
+#Plot
+plot(tr)
+text(tr, pretty=0)
+```
+
+Variables used in tree construction include: "LoyalCH" and "PriceDiff". The strongest indicator for Purchase appears to be "LoyalCH", as it is the root node. This suggest customer loyalty as the most important variable in determining Purchase; however, some customers may be swayed depending on price differences.
+
+The tree's residual mean deviance is .7009 and the misclassification rate is 15.88%. The tree has 9 terminal nodes.
+
+
+### C
+
+Predict the response on the test data with the tree in B. Use table() function to produce a confusion matrix comparing the test labels to the predicted test labels. What is the test error rate?
+
+```{r}
+#Set seed
+set.seed(2)
+
+#Predict
+tr.pred <- predict(tr, test, type = "class")
+table(tr.pred, test$Purchase)
+
+#Test Error Rate
+round(mean(tr.pred != test$Purchase), 4)
+```
+
+The test error rate is .1926, suggesting that about 19% of test instances were mislabeled by our current model.
+
+### D
+
+Use the randomForest package in R. Perform bagging to the training data (with all predictors to be considered for each split of the tree e.g., mtry=17). Predict the response on the test data with the tree from bagging. Use table() function to produce a confusion matrix comparing the test labels to the predicted test labels. What is the test error rate?
+
+```{r}
+#Set seed
+set.seed(2)
+
+#Fit model
+bag <- randomForest(Purchase ~., data = train, mtry = 17, importance = TRUE)
+
+#Summary
+bag
+```
+
+```{r}
+#Set seed
+set.seed(2)
+
+#Predict
+bag.pred <- predict(bag, test, type = "class")
+
+#Confusion Matrix
+table(bag.pred, test$Purchase)
+
+#Test Error
+round(mean(bag.pred != test$Purchase), 4)
+```
+
+The test error rate is .2037, suggesting that about 20% of test instances were mislabeled.
+
+### E
+
+Use the randomForest package in R. Perform random forest to the training data (with √p predictors to be considered for each split of the tree e.g., mtry=4). Predict the response on the test data with the tree. Use table() function to produce a confusion matrix comparing the test labels to the predicted test labels. What is the test error rate?
+
+```{r}
+#Set seed
+set.seed(2)
+
+#Fit model
+rf <- randomForest(Purchase ~., data = train, mtry = 4, importance = TRUE)
+
+#Summary
+rf
+```
+
+```{r}
+#Set seed
+set.seed(2)
+
+#Predict
+rf.pred <- predict(rf, test, type = "class")
+
+#Confusion Matrix
+table(rf.pred, test$Purchase)
+
+#Test Error
+round(mean(rf.pred != test$Purchase), 4)
+```
+The test error rate is .2185, suggesting that about 22% of test instances were mislabeled.
+
+### F
+
+Use the gbm package, within it the gbm() function, to fit boosted trees to the training dataset. Predict the response on the test data with the tree. Use table() function to produce a confusion matrix comparing the test labels to the predicted test labels. What is the test error rate?
+
+```{r}
+#Set seed
+set.seed(2)
+
+#Fit model
+boost <- gbm(as.numeric(Purchase == "CH") ~., data = train, distribution = "bernoulli", n.trees = 1000, interaction.depth = 4, shrinkage = .01)
+
+#Summary
+summary(boost)
+```
+
+
+```{r}
+#Set seed
+set.seed(2)
+
+#Predict
+boost.pred <- predict(boost, test, n.trees = 1000, type = "response")
+boost.pred <- ifelse(boost.pred > .5, "CH", "MM")
+
+#Confusion Matrix
+t <- table(boost.pred, test$Purchase)
+print(t)
+
+#Test Error
+round(mean(boost.pred != test$Purchase), 4)
+
+```
+The test error rate is .2074, suggesting that about 21% of test instances were mislabeled.
+
+### G
+
+Compare the test results in C, D, E, & F Which method performs the best for the dataset?
+
+Regarding test error, C performed the best with the lowest test error (.1926), followed by D/Bagging (.2037), then F/Boosting (.2074), and finally E/Random Forest (.2185). CH loyalty (LoyalCH) was consistently the most influential variable for determining Purchase.  
+
+```{r}
+ 
+```
+
+
+
+

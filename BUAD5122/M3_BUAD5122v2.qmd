@@ -1,0 +1,87 @@
+---
+title: "M3_BUAD5122"
+author: "Danni Martin"
+date: "1/22/2025"
+format: docx
+editor: visual
+---
+
+# Problem 1
+
+This question involves using logistic regression on the Weekly dataset.
+
+## A
+
+Use the Weekly dataset to perform a logistic regression with Direction as the response and the five lag variables plus Volume as predictors. Use the summary function to print the results. Do any of the predictors appear to be statistically significant? If so, which ones?
+
+```{r}
+#Load dataset
+Weekly <- read.csv("Weekly.csv", stringsAsFactors = TRUE)
+```
+
+```{r}
+#Review dataset. Print summary.
+summary(Weekly)
+```
+
+```{r}
+#Further analysis.
+pairs(Weekly)
+cor(Weekly[,-9])
+plot(Weekly$Volume)
+```
+
+```{r}
+#Logistic Regression
+log_reg <- glm(Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume, data = Weekly, family = binomial)
+summary(log_reg)
+```
+
+### Interpretation
+
+Lag2 is the only statistically significant variable at the .05 level (p-value=0.0296). The other variables (Lag1, Lag3, Lag4, Lag5, Volume) are not statistically significant at the .05 level. The coefficient for Lag2 is 0.05844. \##
+
+## B
+
+Compute the confusion matrix and overall fraction of correct predictions. Explain what the confusion matrix is telling you about the types of mistakes made by logistic regression.
+
+```{r}
+#Confusion matrix
+log_prob <- predict(log_reg, type = "response")
+log_pred <- rep("Down", 1089)
+log_pred[log_prob > .5] = "Up"
+(t <- table(log_pred, Weekly$Direction))
+
+#Overall accuracy
+sum(diag(t)) / sum(t)
+```
+
+### Interpretation
+
+The model correctly predicted that the market would go up on 557 days and down on 54 days. The overall accuracy rate of the model is 56.1%. The model incorrectly predicted "Up" when the market was actually down on 430 days. Additionally, the model incorrectly predicted "Down" when the market was up on 48 days. It seems like the model is much more likely to predict "Up", even on days when the market is down.
+
+## C
+
+Now fit the logistic regression model using a training data period from 1990 to 2008, with Lag2 as the only predictor. Compute the confusion matrix and the overall fraction of correct predictions for the held out data (that is, the data from 2009 and 2010).
+
+```{r}
+#Create train set
+train <- subset(Weekly, Year < 2009)
+test <- subset(Weekly, Year >= 2009)
+
+#New logistic regression model
+log_reg2 <- glm(Direction ~ Lag2, data = train , family = binomial)
+
+#Confusion matrix
+log_prob2 <- predict(log_reg2, test, type = "response") > 0.5
+log_pred2 <- rep("Down", 104)
+log_pred2[log_prob2 > .5] <- "Up"
+(t <- table(log_pred2, test$Direction))
+
+#Overall accuracy
+sum(diag(t)) / sum(t)
+```
+
+### Interpretation
+
+The overall accuracy rate for the test data is 62.5%. The model correctly predicted "Up" for 56 days and "Down" for 9 days. In contrast, the model incorrectly predicted "Up" for 34 days and "Down" for 5 days.
