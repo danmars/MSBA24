@@ -1,0 +1,342 @@
+---
+title: "M7:Group Coding Assignment"
+author: "Asqual Gebreslase"
+date: "2025-02-19"
+output: word_document
+---
+
+**Problem1**
+
+##### Principal Component Analysis (PCA) on CreditShort Dataset
+- In this project, we will perform Principal Component Analysis (PCA) on the CreditShort dataset, which contains records of 400 applicants with the following attributes:Income, Credit Limit, Credit Rating, Number of Credit Cards, Age, Education Level
+
+- The goal of this analysis is to reduce the dimensionality of the dataset while retaining as much variance as possible, allowing us to better understand relationships between variables and identify patterns in the data.
+
+##### Objectives
+- Perform PCA using the prcomp() function, ensuring that all variables are standardized to have a mean of zero and a standard deviation of one.
+
+- Extract and print the principal component loading vectors, which indicate the contribution of each original variable to the principal components.
+
+- Create a biplot of the first two principal components to visualize the relationships between variables and observations.
+
+- Calculate the Proportion of Variance Explained (PVE) for each principal component using the standard deviation output of the prcomp() function.
+
+- Interpret the results from steps (A) and (B) to derive meaningful insights about the dataset.
+
+##### By conducting this analysis, we aim to uncover underlying data structures, reduce redundancy, and enhance data visualization through PCA.
+
+install.packages("ggbiplot")    #For improved biplot visualization
+
+install.packages("ggplot2")     #For additional plotting features
+
+install.packages("dplyr")       #For data manipulation (if needed)
+
+install.packages("tidyverse")   #Collection of useful data science packages
+
+
+setwd("C:/Users/Owner/MSBA_WM/BUAD5122/M7/data")
+
+##### A. Perform principal components analysis using the prcomp() function, make sure to scale the variables to have standard deviation one. Print out the corresponding principal component loading vectors.
+
+```{r}
+library(ggplot2)
+CreditShort <- read.csv("CreditShort.csv")
+pca_result <- prcomp(CreditShort, scale. = TRUE)  #Perform PCA with scaling
+
+summary(pca_result)  #Print PCA results
+#Print the principal component loading vectors
+print(pca_result$rotation)
+```
+
+##### B. Biplot the first and second principal components. Interpret the biplot. Using the sdev output of the prcomp() function, find out the proportion of variance explained (PVE) by each principal component.
+
+```{r}
+#Load necessary libraries
+library(ggplot2)
+#Biplot of the first two principal components
+biplot(pca_result, scale = 0)
+
+#Compute Proportion of Variance Explained (PVE)
+pve <- (pca_result$sdev^2) / sum(pca_result$sdev^2)
+print(pve)  #Print PVE for each principal component
+
+#Scree plot to visualize variance explained
+plot(pve, type = "b", main = "Scree Plot", xlab = "Principal Component", 
+ylab = "Proportion of Variance Explained")
+```
+
+##### C. **Interpret your findings in steps (A) and (B)**
+##### Interpretation of PCA Results (Step A)
+##### 1. Principal Component Loadings
+
+- The **principal component loadings** represent how much each original variable contributes to each **principal component (PC)**.
+- **PC1** has the highest loadings for **Income (0.54), Limit (0.58), and Rating (0.59)**, meaning it primarily captures **financial attributes**.
+- **PC2** is most influenced by **Cards (0.74) and Education (-0.61)**, suggesting it captures a contrast between credit card ownership and education level.
+- **PC3** has strong negative loadings for **Age (-0.78) and Education (-0.58)**, indicating it differentiates applicants based on **demographic factors**.
+- **PC4** shows high positive loading for **Age (0.54)** and high negative loading for **Cards (-0.63)**, suggesting a contrast between younger applicants with more credit cards and older applicants with fewer cards.
+- **PC5** and **PC6** explain smaller variations, primarily involving **Income, Limit, and Rating**, with lower overall contributions.
+
+---
+
+##### 2. Variance Explained
+- The **Proportion of Variance Explained (PVE)** indicates how much information each **principal component** retains:
+  - **PC1 explains 45.88%** of the variance, meaning it is the most significant component.
+  - **PC2 explains 17.61%**, adding an additional dimension to the data.
+  - **PC3 (16.58%) and PC4 (15.50%)** contribute moderately.
+  - **PC5 (4.39%) and PC6 (0.04%)** explain very little variance.
+- **Cumulative PVE** shows how much total variance is captured by multiple components:
+  - **PC1-PC2 together explain ~63.48%** of the variance.
+  - **PC1-PC3 together explain ~80.07%**.
+  - **PC1-PC4 together explain ~95.57%**, meaning **four principal components capture most of the data variation**.
+
+---
+
+##### Key Findings
+1. **PC1 represents financial characteristics**, primarily influenced by **Income, Limit, and Rating**.
+2. **PC2 captures differences in credit card ownership vs. education**.
+3. **PC3 and PC4 highlight demographic variations**, with **Age and Education** playing significant roles.
+4. **PC1-PC4 together explain over 95% of the total variance**, making them the most meaningful components for analysis.
+5. **PC5 and PC6 contribute little variance**, suggesting they can be ignored for most interpretations.
+
+
+##### Interpretation of PCA Results (Step B)
+##### 1. Biplot Analysis
+
+- The **biplot** visualizes both the **principal component scores** (observations) and **principal component loadings** (variables).
+- **PC1 (X-axis)** and **PC2 (Y-axis)** explain a significant portion of the variance in the dataset.
+- **Key Observations**:
+  - **Cards and Age** have high loadings in **PC2**, indicating they contribute significantly to the second principal component.
+  - **Income, Limit, and Rating** cluster together and have strong contributions to **PC1**, suggesting they are highly correlated.
+  - **Education** has a negative correlation with **PC1**, meaning higher education levels may be associated with lower values for financial attributes like credit limit or rating.
+
+---
+
+##### 2. Scree Plot Analysis
+- The **scree plot** displays the proportion of variance explained by each principal component.
+- **Key Observations**:
+  - **PC1 explains ~45.88% of the total variance**, making it the most significant component.
+  - **PC2 contributes an additional 17.61%**, indicating it also holds meaningful information.
+  - The **cumulative variance explained by PC1–PC4 is ~95.57%**, meaning four components retain most of the dataset’s variability.
+  - The **elbow method** suggests retaining **four principal components** since the variance explained by additional components drops significantly.
+
+---
+
+##### 3. Key Findings
+1. **PC1 represents financial attributes** (Income, Limit, Rating) as the dominant factors.
+2. **PC2 captures variations in demographic characteristics** (Cards, Age, Education).
+3. **The scree plot suggests that four principal components explain most of the variance**.
+4. **The biplot confirms relationships between variables**, with financial variables clustering together and demographic factors aligning differently.
+5. **PC5 and PC6 contribute very little variance** (~4.39% and ~0.04%), indicating they are not crucial for data interpretation.
+
+---
+
+**Problem2**
+
+##### **Problem 2: Clustering Analysis on USArrests Dataset**
+
+This problem involves applying **K-means and hierarchical clustering** on the **USArrests** dataset to explore patterns in crime rates across states.  
+
+##### **Tasks:**
+1. **K-means Clustering**  
+   - Perform K-means clustering for **k = 2, 3, 4, 5** and compare results.  
+   - Determine the optimal number of clusters and justify your choice.
+
+2. **Hierarchical Clustering**  
+   - Use **complete linkage and Euclidean distance** to cluster the states.  
+   - Cut the dendrogram into **three clusters** and analyze the cluster assignments.  
+   - Repeat hierarchical clustering after **scaling the variables** and compare results.  
+   - Discuss the impact of scaling on clustering performance.
+
+3. **Comparison & Evaluation**  
+   - Compare K-means and hierarchical clustering results.  
+   - Identify the most effective clustering method and justify your choice.  
+
+##### **Goal:** Identify meaningful patterns in crime rates across states using clustering techniques. 
+
+---
+
+##### A. Use the function kmeans() performs K-means clustering in R with k=2, 3, 4, & 5. Interpret and compare the results from different k. What is your choice of k, why?
+
+```{r}
+#Load required libraries
+library(ggplot2)
+library(factoextra)                                   #For cluster visualization
+USArrests <- read.csv("USArrests.csv", row.names = 1) #Set state names as row names 
+
+#Standardize the dataset (important for K-means)
+USArrests_scaled <- scale(USArrests)
+
+#Perform K-means clustering for k = 2, 3, 4, and 5
+set.seed(123)  #Set seed for reproducibility
+k2 <- kmeans(USArrests_scaled, centers = 2, nstart = 25)
+k3 <- kmeans(USArrests_scaled, centers = 3, nstart = 25)
+k4 <- kmeans(USArrests_scaled, centers = 4, nstart = 25)
+k5 <- kmeans(USArrests_scaled, centers = 5, nstart = 25)
+
+print(k2)
+print(k3)
+print(k4)
+print(k5)
+
+#Visualize clusters for each k
+fviz_cluster(k2, data = USArrests_scaled) + ggtitle("K-Means Clustering (k=2)")
+fviz_cluster(k3, data = USArrests_scaled) + ggtitle("K-Means Clustering (k=3)")
+fviz_cluster(k4, data = USArrests_scaled) + ggtitle("K-Means Clustering (k=4)")
+fviz_cluster(k5, data = USArrests_scaled) + ggtitle("K-Means Clustering (k=5)")
+
+#Use the Elbow Method to determine the optimal k
+wcss <- c(k2$tot.withinss, k3$tot.withinss, k4$tot.withinss, k5$tot.withinss)
+k_values <- c(2, 3, 4, 5)
+
+#Plot Elbow Method
+plot(k_values, wcss, type = "b", main = "Elbow Method for Optimal k",
+     xlab = "Number of Clusters (k)", ylab = "Total Within-Cluster Sum of Squares",
+     pch = 16, col = "blue")
+```
+##### **Comparison of Clustering Results for Different k**
+
+##### **k = 2**  
+- Divides states into **two broad clusters**, likely separating high and low crime regions.  
+- Too general, lacks detailed insights.
+
+##### **k = 3** ✅ **(Best Choice)**  
+- Introduces a **third cluster**, distinguishing **low, moderate, and high crime states**.  
+- Provides a **balanced and interpretable** classification.
+
+##### **k = 4 and k = 5**  
+- Further segmentation but **clusters become too small** and less meaningful.  
+- No significant improvement in variance explained.  
+
+##### **Optimal Choice of k: k = 3**
+##### **Reasoning:**
+1. **Elbow Method:** The within-cluster sum of squares (WCSS) shows a significant drop at **k = 3**, indicating an optimal balance between compactness and separation.
+2. **Interpretability:** With **k = 3**, states are grouped into **low, moderate, and high crime rate regions**, making the results meaningful.
+3. **Cluster Stability:** Increasing **k beyond 3** results in smaller, less distinct clusters without adding much insight.
+
+##### **Final Choice:** **k = 3** is the best option as it provides clear, well-separated, and interpretable clusters.
+
+---
+
+##### B. Perform hierarchical clustering on the states.
+##### B.a. Using hierarchical clustering with complete linkage and Euclidean distance, cluster the states.
+
+##### B.b. Cut the dendrogram at a height that results in three distinct clusters. Which states belong to which clusters?
+##### B.C. Hierarchically cluster the states using complete linkage and Euclidean distance, after scaling the variables to have standard deviation one.
+##### B.d. What effect does scaling the variables have on the hierarchical clustering obtained? In your opinion, should the variables be scaled before the inter-observation dissimilarities are computed? Provide a justification for your answer.
+
+```{r}
+#Load required libraries
+library(ggplot2)
+library(dendextend)   #For hierarchical clustering visualization
+library(cluster)      #For clustering functions
+library(factoextra)   #For visualization tools
+library(tidyverse)    #Data manipulation
+
+set.seed(123)         #Ensure reproducibility
+k_values <- 2:5
+k_results <- lapply(k_values, function(k) kmeans(USArrests_scaled, centers = k, nstart = 25))
+
+#--------------------
+#B. Hierarchical Clustering
+#--------------------
+
+#Compute distance matrix using Euclidean distance
+dist_matrix <- dist(USArrests, method = "euclidean")
+
+#(B.a) Perform Hierarchical Clustering using Complete Linkage
+hc_complete <- hclust(dist_matrix, method = "complete")
+
+#Plot dendrogram without scaling
+plot(hc_complete, main = "Hierarchical Clustering Dendrogram (Without Scaling)", 
+     xlab = "", sub = "", cex = 0.7)
+
+#(B.b) Cut dendrogram into 3 clusters
+clusters_hc <- cutree(hc_complete, k = 3)
+print("States in each cluster (without scaling):")
+split(names(clusters_hc), clusters_hc)
+
+#(B.c) Perform Hierarchical Clustering After Scaling
+dist_matrix_scaled <- dist(USArrests_scaled, method = "euclidean")
+hc_complete_scaled <- hclust(dist_matrix_scaled, method = "complete")
+
+#Plot scaled dendrogram
+plot(hc_complete_scaled, main = "Hierarchical Clustering Dendrogram (With Scaling)", 
+     xlab = "", sub = "", cex = 0.7)
+
+#Cut dendrogram at k = 3 for scaled data
+clusters_hc_scaled <- cutree(hc_complete_scaled, k = 3)
+print("States in each cluster (with scaling):")
+split(names(clusters_hc_scaled), clusters_hc_scaled)
+
+#Compare scaled and unscaled dendrograms
+par(mfrow = c(1, 2))  #Display side by side
+plot(hc_complete, main = "Without Scaling", xlab = "", sub = "", cex = 0.7)
+plot(hc_complete_scaled, main = "With Scaling", xlab = "", sub = "", cex = 0.7)
+par(mfrow = c(1, 1))  #Reset layout
+```
+
+##### d. What effect does scaling the variables have on the hierarchical clustering obtained? In your opinion, should the variables be scaled before the inter-observation dissimilarities are computed? Provide a justification for your answer.
+
+##### Impact of Scaling on Clustering Results:
+1. **Without Scaling (Raw Data)**
+   - The clustering is heavily influenced by variables with larger magnitudes (e.g., `Assault` and `Murder`), leading to biased groupings.
+   - The hierarchical structure may be misleading as certain variables dominate the distance computation.
+
+2. **With Scaling (Standardized Data)**
+   - Each variable contributes equally, making the clustering process **more balanced and meaningful**.
+   - The **Euclidean distances** reflect true inter-observation dissimilarities **without being skewed by differing variable scales**.
+
+
+##### **Should the Variables be Scaled Before Clustering?**
+- **Yes, variables should be scaled before computing inter-observation dissimilarities.** 
+
+
+Justification:
+- In datasets where variables have different units or ranges (like `Murder`, `Assault`, and `Rape` in USArrests), **unscaled data allows high-variance variables to dominate**.
+- Scaling **equalizes the importance of all features**, leading to **clusters that are more representative** of the actual data structure.
+- This ensures that the **clustering is driven by patterns in the data rather than arbitrary differences in measurement scales**.
+
+
+##### **Conclusion**
+- **Scaling is essential for hierarchical clustering when variables have different units or ranges.**  
+It leads to **more interpretable and reliable clusters**, avoiding distortions caused by variables with larger numerical values. 
+
+---
+
+##### C. Compare the clustering resulting from (A), (B.a), (B.b), and (B.c). Which one performs best in your opinion? Why?
+##### **Comparison of Clustering Results from (A), (B.a), (B.b), and (B.c)**
+ 
+##### Comparison of Clustering Methods:
+
+1. **(A) K-Means Clustering**
+   - Uses the Elbow Method to determine the optimal number of clusters.
+   - Sensitive to initialization but efficient in partitioning data.
+   - Works best with **standardized data**.
+
+2. **(B.a) Hierarchical Clustering (Without Scaling)**
+   - Clustering is influenced by high-variance variables, leading to **biased results**.
+   - Distances are dominated by features with larger numerical ranges.
+
+3. **(B.b) Hierarchical Clustering (Without Scaling, k=3)**
+   - Cutting the dendrogram into 3 clusters gives structured groupings.
+   - However, **without scaling, the clusters may not be meaningful**.
+
+4. **(B.c) Hierarchical Clustering (With Scaling)**
+   - **Best approach** as it ensures all variables contribute equally.
+   - Results in **more balanced and interpretable clusters**.
+   - Prevents variables with larger magnitudes from dominating clustering.
+
+##### **Best Performing Method**
+- **Hierarchical Clustering with Scaling (B.c)** is the best method.
+- It provides **well-distributed clusters** without bias from variable scales.
+- Ensures that **distance calculations are meaningful**.
+- More interpretable than raw hierarchical clustering and more stable than K-Means.
+
+##### **Conclusion**
+- **Scaling is crucial for hierarchical clustering**, and when applied, it results in **more representative clusters**. If efficiency is the main concern, K-Means with an optimal **k** is a good alternative.
+
+
+
+
+
+

@@ -1,0 +1,251 @@
+---
+title: "M4 Group Coding Assignment"
+author: 
+     - "Asqual Gebreslase"
+     - "Benjamin Ritenour"
+     - "Danielle Martin"
+     - "Myunghee Shin"
+date: "2025-02-02"
+output: word_document
+---
+
+### **Logistic Regression Model to Predict Default data set using cross validation & bootstrap**
+**Install required packages, load libraries, import data, check structure, and convert 'default' column to a binary factor (0 = No, 1 = Yes)**
+
+install.packages("caTools")
+install.packages("caret")
+install.packages("boot")
+install.packages("pROC")
+
+```{r}
+setwd("C:/Users/Owner/MSBA_WM/BUAD5122/M4/data")
+data <- read.csv("Default.csv") 
+str(data) 
+data$default <- as.factor(ifelse(data$default == "Yes", 1, 0))
+```
+## **Problem 1**
+##### Build a logistic regression model using cross-validation to predict the probability of default based on income and balance from the Default dataset. Then, use the validation set approach to estimate the test error of the model.
+### **A. Fit Logistic Regression Model**
+```{r}
+logistic_model <- glm(default ~ income + balance, data = data, family = "binomial")
+summary(logistic_model)
+```
+#### Output:
+- **Intercept** = **-11.54** (baseline risk of default)
+- **Income Coefficient** = **2.081e-05** (very small positive effect)
+- **Balance Coefficient** = **5.647e-03** (stronger effect on default)
+- **P-values** indicate that both **income and balance significantly impact default**.
+
+### **B. Validation Set Approach to Estimate Test Error**
+
+```{r}
+library(caTools)
+library(pROC)
+set.seed(42)
+#Split data into 70% training and 30% validation
+split <- sample.split(data$default, SplitRatio = 0.7)
+train <- subset(data, split == TRUE)
+val <- subset(data, split == FALSE)
+
+#Fit logistic regression model on training set
+logistic_model <- glm(default ~ income + balance, data = train, family = "binomial")
+
+#Predict on validation set
+val$predicted_prob <- predict(logistic_model, newdata = val, type = "response")
+val$predicted <- ifelse(val$predicted_prob > 0.5, 1, 0)
+
+#Compute validation set error
+validation_error <- mean(val$predicted != val$default)
+print(paste("Validation Set Error:", round(validation_error, 4)))
+
+#Compute Confusion Matrix (Correcting the error)
+conf_matrix <- table(Predicted = val$predicted, Actual = val$default)
+print(conf_matrix)
+
+#Compute performance metrics
+accuracy <- sum(diag(conf_matrix)) / sum(conf_matrix)
+precision <- conf_matrix[2,2] / sum(conf_matrix[2,])
+recall <- conf_matrix[2,2] / sum(conf_matrix[,2])
+f1_score <- 2 * (precision * recall) / (precision + recall)
+
+#Compute AUC-ROC
+roc_curve <- roc(val$default, val$predicted_prob)
+auc_value <- auc(roc_curve)
+
+#Print Model Performance Metrics
+cat("\n=== Model Performance Metrics ===\n")
+cat("Accuracy:", round(accuracy, 4), "\n")
+cat("Precision:", round(precision, 4), "\n")
+cat("Recall (Sensitivity):", round(recall, 4), "\n")
+cat("F1-Score:", round(f1_score, 4), "\n")
+cat("AUC-ROC:", round(auc_value, 4), "\n")
+
+#Plot ROC Curve
+plot(roc_curve, col = "blue", main = "ROC Curve for Logistic Regression Model")
+```
+#### Output:
+- **Validation Set Error**: **0.0277** (≈ 2.77% of cases misclassified)
+
+## Interpretation of Model Performance
+
+### **Key Metrics**
+- **Validation Error:** 2.77% (Model misclassifies 2.77% of cases)
+- **Accuracy:** 97.23% (Correctly classifies most cases)
+- **Precision:** 68.89% (When predicting default, it's correct 68.89% of the time)
+- **Recall:** 31% (Fails to detect many actual defaults)
+- **F1-Score:** 42.76% (Poor balance between precision and recall)
+- **AUC-ROC:** 95.29% (Strong ability to separate defaulters from non-defaulters)
+
+## **Confusion Matrix Insights**
+- **False Negatives (69 cases):** Model **misses many actual defaulters** (low recall).
+- **False Positives (14 cases):** Some **non-defaulters are wrongly flagged**.
+
+## **ROC Curve Analysis**
+- **AUC = 95.29%** → Excellent at distinguishing between default and non-default.
+- **Curve is far from diagonal**, confirming high predictive power.
+
+## **Business Implications**
+✅ **High Precision (68.89%)** → Most predicted defaulters are correct.  
+⚠️ **Low Recall (31%)** → Model **misses too many real defaulters**, increasing financial risk.  
+🔹 **Recommendation:** Lower decision threshold (e.g., from 0.5 to 0.4) to improve recall.
+
+## **Key Takeaways**
+- **Highly accurate but struggles with recall** (detecting defaults).
+- **AUC-ROC (95.29%) confirms strong classification ability.**
+- **Threshold adjustment or alternative models (Random Forest, XGBoost) may improve recall.**
+
+### **C. LOOCV (Leave-One-Out Cross-Validation)**
+```{r}
+n <- nrow(data)  #Number of observations
+errors <- numeric(n)  #Store errors
+for (i in 1:n) {
+  train <- data[-i, ]  #Leave one observation out
+  val <- data[i, , drop = FALSE]
+  
+  logistic_model <- glm(default ~ income + balance, data = train, family = "binomial")
+  predicted_prob <- predict(logistic_model, newdata = val, type = "response")
+  predicted <- ifelse(predicted_prob > 0.5, 1, 0)
+  errors[i] <- (predicted != val$default)}  #Record mis-classification
+#Compute LOOCV error rate
+loocv_error <- mean(errors)
+print(paste("LOOCV Error:", round(loocv_error, 4)))
+```
+- **LOOCV (Leave-One-Out Cross-Validation):**
+  - **LOOCV (Leave-One-Out Cross-Validation)** leaves **one observation** out at a time, trains the model on the remaining data, and predicts the left-out observation.
+  - **Error Rate = 2.63%** (more accurate but computationally expensive).
+
+
+### **D. 5-Fold Cross-Validation**
+```{r}
+library(caret)
+set.seed(42)
+k <- 5  #Number of folds
+folds <- createFolds(data$default, k = k)  #Create folds
+errors <- numeric(k)  #Store error rates
+
+for (i in 1:k) {
+  train <- data[-folds[[i]], ]
+  val <- data[folds[[i]], ]
+  logistic_model <- glm(default ~ income + balance, data = train, family = "binomial")
+  val$predicted_prob <- predict(logistic_model, newdata = val, type = "response")
+  val$predicted <- ifelse(val$predicted_prob > 0.5, 1, 0)
+  errors[i] <- mean(val$predicted != val$default)}
+#Compute average k-fold CV error
+k_fold_error <- mean(errors)
+print(paste("5-Fold Cross-Validation Error:", round(k_fold_error, 4)))
+```
+### **5-Fold Cross-Validation:**
+- **Error Rate = 2.60%** (almost identical to LOOCV but more efficient).
+- **Preferred method** due to better computational performance.
+
+---
+
+### **LOOCV vs. 5-Fold Cross-Validation**
+- **LOOCV Error: 0.0263**  
+  - Provides an almost **unbiased estimate** of test error.  
+  - However, it requires fitting the model **10,000 times**, making it **computationally expensive**.  
+
+- **5-Fold Cross-Validation Error: 0.026**  
+  - Produces a **nearly identical** test error as LOOCV.  
+  - More **computationally efficient**, as it requires fitting only **5 models** instead of 10,000.  
+
+---
+### **Comparison of Validation Methods**
+```{r}
+#Create a data frame
+cv_results <- data.frame(
+  "Cross-Validation Method" = c("LOOCV (Leave-One-Out CV)", "5-Fold Cross-Validation"),
+  "Test Error Rate" = c("0.0263 (2.63%)", "0.0260 (2.60%)"))
+print(cv_results)   #Print the table
+```
+
+##### **Conclusion**
+  - Both methods produce very similar test error rates (~2.6%), suggesting that the model is stable and performs consistently across different validation strategies.
+
+  - 5-Fold Cross-Validation is computationally more efficient compared to LOOCV, which requires fitting the model N times (once per observation).
+
+  - LOOCV provides a slightly lower bias estimate of test error, but the difference between LOOCV and 5-Fold CV is negligible in this case, indicating that 5-Fold CV is a better choice due to its efficiency.
+
+  - Model Performance: Since the test error rates are low (~2.6% misclassification), the logistic regression model using income and balance as predictors performs well in predicting default status.
+
+  - Since the error rates are nearly the same, 5-Fold Cross-Validation is the preferred method due to its computational efficiency and reliability.
+
+  - The model is stable, meaning additional validation techniques (like LOOCV) do not significantly change the results.
+
+
+## **Problem 2**
+##### 1. Write a function, boot.fn(), that takes as input the Default data set as well as an index of the observations, and that outputs the coefficient estimates for income and balance in the multiple logistic regression model.
+
+```{r}
+boot.fn <- function(data, index) {
+  #Fit logistic regression model using the given index
+  model <- glm(default ~ income + balance, data = data[index, ], family = "binomial")
+  #Return the coefficient estimates for income and balance
+  return(coef(model))}
+```
+
+##### 2. Use the boot() function together with your boot.fn() function to estimate the standard errors of the logistic regression coefficients for income and balance.**
+
+```{r}
+#Apply bootstrapping with 1,000 resamples
+library(boot) 
+set.seed(42)
+boot_results <- boot(data, boot.fn, 1000)
+print(boot_results) #Print bootstrapping results
+```
+##### 3. Comment on the estimated standard errors obtained using the using  bootstrap function.
+-**Comment on Bootstrap Standard Errors**: 
+  - The bootstrap standard errors for the logistic regression coefficients are small, indicating stable estimates across resamples.
+
+  - Intercept (SE = 0.4435): Moderate variability but stable given its large magnitude.
+
+  - Income (SE = 5.07e-06): Very low variability, suggesting a highly reliable estimate.
+
+  - Balance (SE = 2.30e-04): Small standard error, confirming its strong predictive power
+
+##### Additionally, the low bias values confirm that the bootstrap estimates closely match the original coefficients, reinforcing the model’s reliability.
+
+
+**to compare the original coefficients vs. bootstrap estimates**
+```{r}
+original_coef <- coef(logistic_model)
+#Create a table comparing original coefficients and bootstrap statistics
+comparison <- data.frame(
+  "Coefficient" = c("Intercept", "Income", "Balance"),
+  "Original Estimate" = original_coef,
+  "Bootstrap Estimate" = boot_results$t0)  #Extract bootstrap means
+print(comparison)
+```
+**Key Observations**
+
+
+- Bootstrap estimates closely match the original coefficients, confirming the model’s stability.
+
+
+- Small deviations are expected due to resampling variability, but differences are minor.
+
+
+- Balance has the highest coefficient, indicating its stronger effect on default compared to income.
+
+ 
+ 
