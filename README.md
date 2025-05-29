@@ -1,5 +1,23 @@
 # MSBA24
 
+## Course Overview:
+BUAD 512A: Probability and Statistics with R
+BUAD 512B: Business Modeling with Python
+BUAD 5112: Competing Through Business Analytics
+BUAD 5052: Decision Modeling
+BUAD 5122: Machine Learning and Predictive Analytics
+BUAD 5772: Databases and Data Warehousing
+
+## BUAD 512A:
+M1: Introduction to R
+M2: Descriptive Statistics
+M3: Data Visualization
+M4: Probabilities
+M5: Hypothesis Testing
+M6: ANOVA Testing
+M7: Correlation and Regression
+
+
 ## Useful Links:
 
 ### R:
