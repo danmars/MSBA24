@@ -1,0 +1,53 @@
+-- Challenge 1 - Retrieve data from one or more tables- use zagi
+-- Marketing needs a list of customers and what product they have purchased
+-- which also shows category name and vendor name for that product.  To do this:
+-- Create a query that returns customername, productname, categoryname, vendorname
+-- order the list by customer name
+-- Your list should contain 9 items
+
+-- Challenge 2 - Retrieve data from one or more tables - outer join- use hafh
+-- Write three separate queries that return the bulding id, apartment number and corporate client name:
+-- Which apartments have no corporate clients currently leasing them?
+-- Which corporate clients are currently not leasing any appartments?
+-- A list that combines the two above queries - a full outer join
+
+-- Challenge 3 - Summary queries - use my_guitar_shop
+-- Write a SELECT statement that answers this question: What is the total quantity 
+-- purchased for each product within each category? Return these columns:
+-- The category_name column from the category table
+-- The product_name column from the products table
+-- The total quantity purchased for each product with orders in the Order_Items 
+-- table
+-- Use the WITH ROLLUP operator to include rows that give a summary for each 
+-- category name as well as a row that gives the grand total.
+-- Use the IF and GROUPING functions to replace null values in the category_name 
+-- and product_name columns with literal values if they’re for summary rows. 
+
+-- Challenge 4 - Summary queries - use my_guitar_shop
+-- Write a SELECT statement that uses an aggregate window function to get the total 
+-- amount of each order. Return these columns:
+-- The order_id column from the Order_Items table
+-- The total amount for each order item in the Order_Items table (Hint: You can 
+-- calculate the total amount by subtracting the discount amount from the item 
+-- price and then multiplying it by the quantity)
+-- The total amount for each order
+-- Sort the result set in ascending sequence by the order_id column.
+
+-- Challenge 5 - Summary queries - use my_guitar_shop
+-- Modify the solution to exercise Challenge 4 so the column that contains the total amount for 
+-- each order contains a cumulative total by item amount.
+-- Add another column to the SELECT statement that uses an aggregate window 
+-- function to get the average item amount for each order.
+-- Modify the SELECT statement so it uses a named window for the two aggregate 
+-- functions.
+
+-- Challenge 6 - Summary queries - use my_guitar_shop
+-- Write a SELECT statement that uses aggregate window functions to calculate the 
+-- order total for each customer and the order total for each customer by date. Return 
+-- these columns:
+-- The customer_id column from the Orders table
+-- The order_date column from the Orders table
+-- The total amount for each order item in the Order_Items table
+-- The sum of the order totals for each customer
+-- The sum of the order totals for each customer by date (Hint: You can create a 
+-- peer group to get these values)

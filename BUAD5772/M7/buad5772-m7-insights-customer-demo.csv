@@ -1,0 +1,4 @@
+customer_id,customer_name,Gender,marital_status,education_level,creditScore
+1-2-333,Tina,Female,Single,College,700
+2-3-444,Tony,Male,Single,High School,750
+3-4-555,Pam,Female,Married,College,623

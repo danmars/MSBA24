@@ -1,0 +1,537 @@
+<?xml version="1.0"?>
+<AlteryxDocument yxmdVer="2018.4">
+  <Nodes>
+    <Node ToolID="1">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.DbFileInput.DbFileInput">
+        <Position x="138" y="102" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Passwords />
+          <CachedCosmeticName />
+          <File RecordLimit="" FileFormat="23">aka:MySQL|||Select zagi_small.soldvia.productid, zagi_small.customer.customerid, zagi_small.salestransaction.storeid, zagi_small.salestransaction.tdate, zagi_small.product.productprice, zagi_small.soldvia.noofitems From zagi_small.product Inner Join zagi_small.soldvia On zagi_small.product.productid = zagi_small.soldvia.productid Inner Join zagi_small.salestransaction On zagi_small.salestransaction.tid = zagi_small.soldvia.tid Inner Join zagi_small.customer On zagi_small.customer.customerid = zagi_small.salestransaction.customerid</File>
+          <FormatSpecificOptions>
+            <PreSQLOnConfig>True</PreSQLOnConfig>
+            <ReadCentroids>False</ReadCentroids>
+            <NoProgress>True</NoProgress>
+            <ReadUncommitted>False</ReadUncommitted>
+            <TableStyle>Quoted</TableStyle>
+            <PreSQL />
+            <PostSQL />
+          </FormatSpecificOptions>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <AnnotationText>Read data for fact table</AnnotationText>
+          <DefaultAnnotationText>aka:MySQL
+Table=Select zagi_small.soldvia.productid, zagi_small.customer.customerid, zagi_small.salestransaction.storeid, zagi_small.salestransaction.tdate, zagi_small.product.productprice, zagi_small.soldvia.noofitems From zagi_small.product Inner Join zagi_small.soldvia On zagi_small.product.productid = zagi_small.soldvia.productid Inner Join zagi_small.salestransaction On zagi_small.salestransaction.tid = zagi_small.soldvia.tid Inner Join zagi_small.customer On zagi_small.customer.customerid = zagi_small.salestransaction.customerid</DefaultAnnotationText>
+          <Left value="False" />
+        </Annotation>
+        <MetaInfo connection="Output">
+          <RecordInfo>
+            <Field name="productid" size="3" source="File: aka:MySQL|||Select zagi_small.soldvia.productid, zagi_small.customer.customerid, zagi_small.salestransaction.storeid, zagi_small.salestransaction.tdate, zagi_small.product.productprice, zagi_small.soldvia.noofitems From zagi_small.product Inner Join zagi_small.soldvia On zagi_small.product.productid = zagi_small.soldvia.productid Inner Join zagi_small.salestransaction On zagi_small.salestransaction.tid = zagi_small.soldvia.tid Inner Join zagi_small.customer On zagi_small.customer.customerid = zagi_small.salestransaction.customerid" type="String" />
+            <Field name="customerid" size="7" source="File: aka:MySQL|||Select zagi_small.soldvia.productid, zagi_small.customer.customerid, zagi_small.salestransaction.storeid, zagi_small.salestransaction.tdate, zagi_small.product.productprice, zagi_small.soldvia.noofitems From zagi_small.product Inner Join zagi_small.soldvia On zagi_small.product.productid = zagi_small.soldvia.productid Inner Join zagi_small.salestransaction On zagi_small.salestransaction.tid = zagi_small.soldvia.tid Inner Join zagi_small.customer On zagi_small.customer.customerid = zagi_small.salestransaction.customerid" type="String" />
+            <Field name="storeid" size="3" source="File: aka:MySQL|||Select zagi_small.soldvia.productid, zagi_small.customer.customerid, zagi_small.salestransaction.storeid, zagi_small.salestransaction.tdate, zagi_small.product.productprice, zagi_small.soldvia.noofitems From zagi_small.product Inner Join zagi_small.soldvia On zagi_small.product.productid = zagi_small.soldvia.productid Inner Join zagi_small.salestransaction On zagi_small.salestransaction.tid = zagi_small.soldvia.tid Inner Join zagi_small.customer On zagi_small.customer.customerid = zagi_small.salestransaction.customerid" type="V_String" />
+            <Field name="tdate" source="File: aka:MySQL|||Select zagi_small.soldvia.productid, zagi_small.customer.customerid, zagi_small.salestransaction.storeid, zagi_small.salestransaction.tdate, zagi_small.product.productprice, zagi_small.soldvia.noofitems From zagi_small.product Inner Join zagi_small.soldvia On zagi_small.product.productid = zagi_small.soldvia.productid Inner Join zagi_small.salestransaction On zagi_small.salestransaction.tid = zagi_small.soldvia.tid Inner Join zagi_small.customer On zagi_small.customer.customerid = zagi_small.salestransaction.customerid" type="Date" />
+            <Field name="productprice" scale="2" size="9" source="File: aka:MySQL|||Select zagi_small.soldvia.productid, zagi_small.customer.customerid, zagi_small.salestransaction.storeid, zagi_small.salestransaction.tdate, zagi_small.product.productprice, zagi_small.soldvia.noofitems From zagi_small.product Inner Join zagi_small.soldvia On zagi_small.product.productid = zagi_small.soldvia.productid Inner Join zagi_small.salestransaction On zagi_small.salestransaction.tid = zagi_small.soldvia.tid Inner Join zagi_small.customer On zagi_small.customer.customerid = zagi_small.salestransaction.customerid" type="FixedDecimal" />
+            <Field name="noofitems" source="File: aka:MySQL|||Select zagi_small.soldvia.productid, zagi_small.customer.customerid, zagi_small.salestransaction.storeid, zagi_small.salestransaction.tdate, zagi_small.product.productprice, zagi_small.soldvia.noofitems From zagi_small.product Inner Join zagi_small.soldvia On zagi_small.product.productid = zagi_small.soldvia.productid Inner Join zagi_small.salestransaction On zagi_small.salestransaction.tid = zagi_small.soldvia.tid Inner Join zagi_small.customer On zagi_small.customer.customerid = zagi_small.salestransaction.customerid" type="Int32" />
+          </RecordInfo>
+        </MetaInfo>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxDbFileInput" />
+    </Node>
+    <Node ToolID="3">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.DbFileInput.DbFileInput">
+        <Position x="138" y="210" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Passwords />
+          <CachedCosmeticName />
+          <File RecordLimit="" FileFormat="23">aka:MySQL|||Select zagi_dw.dim_customer.customer_id, zagi_dw.dim_customer.Customer_Key From zagi_dw.dim_customer</File>
+          <FormatSpecificOptions>
+            <PreSQLOnConfig>True</PreSQLOnConfig>
+            <ReadCentroids>False</ReadCentroids>
+            <NoProgress>True</NoProgress>
+            <ReadUncommitted>False</ReadUncommitted>
+            <TableStyle>Quoted</TableStyle>
+            <PreSQL />
+            <PostSQL />
+          </FormatSpecificOptions>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <AnnotationText>Go find customer key</AnnotationText>
+          <DefaultAnnotationText>aka:MySQL
+Table=Select zagi_dw.dim_customer.customer_id, zagi_dw.dim_customer.Customer_Key From zagi_dw.dim_customer</DefaultAnnotationText>
+          <Left value="False" />
+        </Annotation>
+        <MetaInfo connection="Output">
+          <RecordInfo>
+            <Field name="customer_id" size="7" source="File: aka:MySQL|||Select zagi_dw.dim_customer.customer_id, zagi_dw.dim_customer.Customer_Key From zagi_dw.dim_customer" type="String" />
+            <Field description="PrimaryKey" name="Customer_Key" source="File: aka:MySQL|||Select zagi_dw.dim_customer.customer_id, zagi_dw.dim_customer.Customer_Key From zagi_dw.dim_customer" type="Int32" />
+          </RecordInfo>
+        </MetaInfo>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxDbFileInput" />
+    </Node>
+    <Node ToolID="4">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.DbFileInput.DbFileInput">
+        <Position x="138" y="306" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Passwords />
+          <CachedCosmeticName />
+          <File RecordLimit="" FileFormat="23">aka:MySQL|||Select zagi_dw.dim_store.Store_key, zagi_dw.dim_store.storeid From zagi_dw.dim_store</File>
+          <FormatSpecificOptions>
+            <PreSQLOnConfig>True</PreSQLOnConfig>
+            <ReadCentroids>False</ReadCentroids>
+            <NoProgress>True</NoProgress>
+            <ReadUncommitted>False</ReadUncommitted>
+            <TableStyle>Quoted</TableStyle>
+            <PreSQL />
+            <PostSQL />
+          </FormatSpecificOptions>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <AnnotationText>Go find store key</AnnotationText>
+          <DefaultAnnotationText>aka:MySQL
+Table=Select zagi_dw.dim_store.Store_key, zagi_dw.dim_store.storeid From zagi_dw.dim_store</DefaultAnnotationText>
+          <Left value="False" />
+        </Annotation>
+        <MetaInfo connection="Output">
+          <RecordInfo>
+            <Field description="PrimaryKey" name="Store_key" source="File: aka:MySQL|||Select zagi_dw.dim_store.Store_key, zagi_dw.dim_store.storeid From zagi_dw.dim_store" type="Int32" />
+            <Field name="storeid" size="3" source="File: aka:MySQL|||Select zagi_dw.dim_store.Store_key, zagi_dw.dim_store.storeid From zagi_dw.dim_store" type="V_String" />
+          </RecordInfo>
+        </MetaInfo>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxDbFileInput" />
+    </Node>
+    <Node ToolID="5">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.DbFileInput.DbFileInput">
+        <Position x="138" y="390" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Passwords />
+          <CachedCosmeticName />
+          <File RecordLimit="" FileFormat="23">aka:MySQL|||Select zagi_dw.dim_product.Product_Key, zagi_dw.dim_product.productid From zagi_dw.dim_product</File>
+          <FormatSpecificOptions>
+            <PreSQLOnConfig>True</PreSQLOnConfig>
+            <ReadCentroids>False</ReadCentroids>
+            <NoProgress>True</NoProgress>
+            <ReadUncommitted>False</ReadUncommitted>
+            <TableStyle>Quoted</TableStyle>
+            <PreSQL />
+            <PostSQL />
+          </FormatSpecificOptions>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <AnnotationText>Go find product key</AnnotationText>
+          <DefaultAnnotationText>aka:MySQL
+Table=Select zagi_dw.dim_product.Product_Key, zagi_dw.dim_product.productid From zagi_dw.dim_product</DefaultAnnotationText>
+          <Left value="False" />
+        </Annotation>
+        <MetaInfo connection="Output">
+          <RecordInfo>
+            <Field description="PrimaryKey" name="Product_Key" source="File: aka:MySQL|||Select zagi_dw.dim_product.Product_Key, zagi_dw.dim_product.productid From zagi_dw.dim_product" type="Int32" />
+            <Field name="productid" size="3" source="File: aka:MySQL|||Select zagi_dw.dim_product.Product_Key, zagi_dw.dim_product.productid From zagi_dw.dim_product" type="String" />
+          </RecordInfo>
+        </MetaInfo>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxDbFileInput" />
+    </Node>
+    <Node ToolID="6">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.Join.Join">
+        <Position x="378" y="174" />
+      </GuiSettings>
+      <Properties>
+        <Configuration joinByRecordPos="False">
+          <JoinInfo connection="Left">
+            <Field field="customerid" />
+          </JoinInfo>
+          <JoinInfo connection="Right">
+            <Field field="customer_id" />
+          </JoinInfo>
+          <SelectConfiguration>
+            <Configuration outputConnection="Join">
+              <OrderChanged value="False" />
+              <CommaDecimal value="False" />
+              <SelectFields>
+                <SelectField field="Left_productid" selected="True" />
+                <SelectField field="Left_storeid" selected="True" />
+                <SelectField field="Left_tdate" selected="True" />
+                <SelectField field="Left_productprice" selected="True" />
+                <SelectField field="Left_noofitems" selected="True" />
+                <SelectField field="Right_Customer_Key" selected="True" />
+                <SelectField field="*Unknown" selected="False" />
+              </SelectFields>
+            </Configuration>
+          </SelectConfiguration>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxJoin" />
+    </Node>
+    <Node ToolID="7">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.Join.Join">
+        <Position x="486" y="246" />
+      </GuiSettings>
+      <Properties>
+        <Configuration joinByRecordPos="False">
+          <JoinInfo connection="Left">
+            <Field field="storeid" />
+          </JoinInfo>
+          <JoinInfo connection="Right">
+            <Field field="storeid" />
+          </JoinInfo>
+          <SelectConfiguration>
+            <Configuration outputConnection="Join">
+              <OrderChanged value="False" />
+              <CommaDecimal value="False" />
+              <SelectFields>
+                <SelectField field="Left_storeid" selected="False" />
+                <SelectField field="Right_storeid" selected="False" />
+                <SelectField field="*Unknown" selected="True" />
+              </SelectFields>
+            </Configuration>
+          </SelectConfiguration>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxJoin" />
+    </Node>
+    <Node ToolID="8">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.Join.Join">
+        <Position x="486" y="330" />
+      </GuiSettings>
+      <Properties>
+        <Configuration joinByRecordPos="False">
+          <JoinInfo connection="Left">
+            <Field field="productid" />
+          </JoinInfo>
+          <JoinInfo connection="Right">
+            <Field field="productid" />
+          </JoinInfo>
+          <SelectConfiguration>
+            <Configuration outputConnection="Join">
+              <OrderChanged value="False" />
+              <CommaDecimal value="False" />
+              <SelectFields>
+                <SelectField field="Left_productid" selected="False" />
+                <SelectField field="Right_productid" selected="False" />
+                <SelectField field="*Unknown" selected="True" />
+              </SelectFields>
+            </Configuration>
+          </SelectConfiguration>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxJoin" />
+    </Node>
+    <Node ToolID="9">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.AlteryxSelect.AlteryxSelect">
+        <Position x="606" y="342" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <OrderChanged value="False" />
+          <CommaDecimal value="False" />
+          <SelectFields>
+            <SelectField field="*Unknown" selected="True" />
+          </SelectFields>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxSelect" />
+    </Node>
+    <Node ToolID="10">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.DbFileOutput.DbFileOutput">
+        <Position x="750" y="330" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <File MaxRecords="" FileFormat="23">aka:MySQL|||fact_sales</File>
+          <Passwords />
+          <CachedCosmeticName />
+          <FormatSpecificOptions>
+            <SpatialObjSize>8000</SpatialObjSize>
+            <TransactionSize>10000</TransactionSize>
+            <IgnoreDropTableSQLErrors>False</IgnoreDropTableSQLErrors>
+            <PostSQL><![CDATA[ALTER TABLE `zagi_dw`.`fact_sales` 
+CHANGE COLUMN `Customer_Key` `Customer_Key` INT(11) NOT NULL ,
+CHANGE COLUMN `Store_key` `Store_key` INT(11) NOT NULL ,
+CHANGE COLUMN `Product_Key` `Product_Key` INT(11) NOT NULL ,
+CHANGE COLUMN `CalendarKey` `CalendarKey` INT(11) NOT NULL ,
+ADD PRIMARY KEY (`Customer_Key`, `Store_key`, `Product_Key`, `CalendarKey`);
+;
+
+ALTER TABLE `zagi_dw`.`fact_sales` 
+ADD INDEX `fkcal_idx` (`CalendarKey` ASC) VISIBLE,
+ADD INDEX `fkprod_idx` (`Product_Key` ASC) VISIBLE,
+ADD INDEX `fkstore_idx` (`Store_key` ASC) VISIBLE;
+;
+ALTER TABLE `zagi_dw`.`fact_sales` 
+ADD CONSTRAINT `fkcal`
+  FOREIGN KEY (`CalendarKey`)
+  REFERENCES `zagi_dw`.`dim_calendar` (`CalendarKey`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `fkprod`
+  FOREIGN KEY (`Product_Key`)
+  REFERENCES `zagi_dw`.`dim_product` (`Product_Key`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `fkstore`
+  FOREIGN KEY (`Store_key`)
+  REFERENCES `zagi_dw`.`dim_store` (`Store_key`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `fkcust`
+  FOREIGN KEY (`Customer_Key`)
+  REFERENCES `zagi_dw`.`dim_customer` (`Customer_Key`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
+]]></PostSQL>
+            <TableStyle>Quoted</TableStyle>
+            <PreSQL>use zagi_dw;
+drop table if exists fact_sales;</PreSQL>
+            <TransactionMessages>False</TransactionMessages>
+            <OutputOption>Create</OutputOption>
+          </FormatSpecificOptions>
+          <MultiFile value="False" />
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <AnnotationText>Write out fact table</AnnotationText>
+          <DefaultAnnotationText>aka:MySQL
+Table=fact_sales</DefaultAnnotationText>
+          <Left value="False" />
+        </Annotation>
+        <Dependencies>
+          <Implicit />
+        </Dependencies>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxDbFileOutput" />
+    </Node>
+    <Node ToolID="11">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.DbFileInput.DbFileInput">
+        <Position x="366" y="426" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Passwords />
+          <CachedCosmeticName />
+          <File RecordLimit="" FileFormat="23">aka:MySQL|||Select zagi_dw.dim_calendar.CalendarKey, zagi_dw.dim_calendar.FullDate From zagi_dw.dim_calendar</File>
+          <FormatSpecificOptions>
+            <PreSQLOnConfig>True</PreSQLOnConfig>
+            <ReadCentroids>False</ReadCentroids>
+            <NoProgress>True</NoProgress>
+            <ReadUncommitted>False</ReadUncommitted>
+            <TableStyle>Quoted</TableStyle>
+            <PreSQL />
+            <PostSQL />
+          </FormatSpecificOptions>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <AnnotationText>Go find date key</AnnotationText>
+          <DefaultAnnotationText>aka:MySQL
+Table=Select zagi_dw.dim_calendar.CalendarKey, zagi_dw.dim_calendar.FullDate From zagi_dw.dim_calendar</DefaultAnnotationText>
+          <Left value="False" />
+        </Annotation>
+        <Dependencies>
+          <Implicit />
+        </Dependencies>
+        <MetaInfo connection="Output">
+          <RecordInfo>
+            <Field description="PrimaryKey" name="CalendarKey" source="File: aka:MySQL|||Select zagi_dw.dim_calendar.CalendarKey, zagi_dw.dim_calendar.FullDate From zagi_dw.dim_calendar" type="Int32" />
+            <Field name="FullDate" source="File: aka:MySQL|||Select zagi_dw.dim_calendar.CalendarKey, zagi_dw.dim_calendar.FullDate From zagi_dw.dim_calendar" type="Date" />
+          </RecordInfo>
+        </MetaInfo>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxDbFileInput" />
+    </Node>
+    <Node ToolID="12">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.Join.Join">
+        <Position x="678" y="390" />
+      </GuiSettings>
+      <Properties>
+        <Configuration joinByRecordPos="False">
+          <JoinInfo connection="Left">
+            <Field field="tdate" />
+          </JoinInfo>
+          <JoinInfo connection="Right">
+            <Field field="FullDate" />
+          </JoinInfo>
+          <SelectConfiguration>
+            <Configuration outputConnection="Join">
+              <OrderChanged value="True" />
+              <CommaDecimal value="False" />
+              <SelectFields>
+                <SelectField field="Left_Customer_Key" selected="True" />
+                <SelectField field="Left_Store_key" selected="True" />
+                <SelectField field="Left_Product_Key" selected="True" />
+                <SelectField field="Left_tdate" selected="False" />
+                <SelectField field="Left_productprice" selected="True" />
+                <SelectField field="Left_noofitems" selected="True" />
+                <SelectField field="Right_FullDate" selected="True" input="Right_" />
+                <SelectField field="Right_CalendarKey" selected="True" input="Right_" />
+                <SelectField field="*Unknown" selected="True" />
+              </SelectFields>
+            </Configuration>
+          </SelectConfiguration>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxJoin" />
+    </Node>
+    <Node ToolID="14">
+      <GuiSettings Plugin="AlteryxGuiToolkit.TextBox.TextBox">
+        <Position x="210" y="54" width="372" height="72" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Text>We are reading all the measures (the come from zagi_small, and we are also reading lookup keys that allow us to look up the foreign key for each dimension</Text>
+          <Font name="Arial" size="11.25" style="0" />
+          <TextColor name="Black" />
+          <FillColor r="255" g="255" b="128" />
+          <Shape shape="0" />
+          <Justification Justification="3" />
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+    </Node>
+    <Node ToolID="15">
+      <GuiSettings Plugin="AlteryxGuiToolkit.TextBox.TextBox">
+        <Position x="510" y="150" width="420" height="72" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Text><![CDATA[We look up each key from each dimension
+
+Make sure to drop the lookup values ]]></Text>
+          <Font name="Arial" size="11.25" style="1" />
+          <TextColor name="Black" />
+          <FillColor r="255" g="255" b="128" />
+          <Shape shape="0" />
+          <Justification Justification="3" />
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+    </Node>
+  </Nodes>
+  <Connections>
+    <Connection>
+      <Origin ToolID="1" Connection="Output" />
+      <Destination ToolID="6" Connection="Left" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="3" Connection="Output" />
+      <Destination ToolID="6" Connection="Right" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="4" Connection="Output" />
+      <Destination ToolID="7" Connection="Right" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="6" Connection="Join" />
+      <Destination ToolID="7" Connection="Left" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="5" Connection="Output" />
+      <Destination ToolID="8" Connection="Right" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="7" Connection="Join" />
+      <Destination ToolID="8" Connection="Left" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="8" Connection="Join" />
+      <Destination ToolID="9" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="9" Connection="Output" />
+      <Destination ToolID="12" Connection="Left" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="11" Connection="Output" />
+      <Destination ToolID="12" Connection="Right" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="12" Connection="Join" />
+      <Destination ToolID="10" Connection="Input" />
+    </Connection>
+  </Connections>
+  <Properties>
+    <Memory default="True" />
+    <GlobalRecordLimit value="0" />
+    <TempFiles default="True" />
+    <Annotation on="True" includeToolName="False" />
+    <ConvErrorLimit value="10" />
+    <ConvErrorLimit_Stop value="False" />
+    <CancelOnError value="False" />
+    <DisableBrowse value="False" />
+    <EnablePerformanceProfiling value="False" />
+    <DisableAllOutput value="False" />
+    <ShowAllMacroMessages value="False" />
+    <ShowConnectionStatusIsOn value="True" />
+    <ShowConnectionStatusOnlyWhenRunning value="True" />
+    <ZoomLevel value="0" />
+    <LayoutType>Horizontal</LayoutType>
+    <MetaInfo>
+      <NameIsFileName value="True" />
+      <Name>ZagiDWFact</Name>
+      <Description />
+      <RootToolName />
+      <ToolVersion />
+      <ToolInDb value="False" />
+      <CategoryName />
+      <SearchTags />
+      <Author />
+      <Company />
+      <Copyright />
+      <DescriptionLink actual="" displayed="" />
+      <Example>
+        <Description />
+        <File />
+      </Example>
+    </MetaInfo>
+    <Events>
+      <Enabled value="True" />
+    </Events>
+  </Properties>
+</AlteryxDocument>
