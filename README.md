@@ -1,7 +1,7 @@
 # MSBA24
 
 ## Course Overview:
-BUAD 512A: Probability and Statistics with R\
+[BUAD 512A: Probability and Statistics with R](#buad-512a:-probability-and-statistics-with-r)
 BUAD 512B: Business Modeling with Python\
 BUAD 5112: Competing Through Business Analytics\
 BUAD 5052: Decision Modeling\
