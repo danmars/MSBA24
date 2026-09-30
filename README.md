@@ -12,7 +12,7 @@ BUAD 5092: Optimization and Prescriptive Analytics\
 BUAD 5802: Artificial Intelligence\
 BUAD 5762: Capstone Project
 
-## BUAD 512A:
+## BUAD 512A: Probability and Statistics with R
 M1: Introduction to R\
 M2: Descriptive Statistics\
 M3: Data Visualization\
@@ -21,7 +21,14 @@ M5: Hypothesis Testing\
 M6: ANOVA Testing\
 M7: Correlation and Regression
 
-## BUAD 512B: Business Modeling with Python:
+## BUAD 512B: Business Modeling with Python
+M1: Python Basics\
+M2: Control Flow and Functions\
+M3: Input and Output\
+M4: Data Wrangling\
+M5: Introduction to Descriptive Analytics\
+M6: Introduction to Predictive Analytics\
+M7: Introduction to Prescriptive Analytics\
 
 
 
