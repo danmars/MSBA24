@@ -122,13 +122,3 @@ M7: Explainability, Responsibility, and Final Deliverables
 
 ### Statistics:
 - https://jagelves.github.io/BusinessStats/
-
-
-## BUAD 512A:
-M1: Introduction to R\
-M2: Descriptive Statistics\
-M3: Data Visualization\
-M4: Probabilities\
-M5: Hypothesis Testing\
-M6: ANOVA Testing\
-M7: Correlation and Regression
