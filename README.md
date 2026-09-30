@@ -1,6 +1,6 @@
 # MSBA24
 
-## Course Overview:
+## Overview:
 [BUAD 512A: Probability and Statistics with R](#buad-512a-probability-and-statistics-with-r) \
 [BUAD 512B: Business Modeling with Python](#buad-512b-business-modeling-with-python)\
 [BUAD 5112: Competing Through Business Analytics](#buad-5112-competing-through-business-analytics)\
@@ -11,6 +11,8 @@
 [BUAD 5092: Optimization and Prescriptive Analytics](#buad-5092-optimization-and-prescriptive-analytics)\
 [BUAD 5802: Artificial Intelligence](#buad-5802-artificial-intelligence)\
 [BUAD 5762: Capstone Project](#buad-5762-capstone-project)
+
+[Useful Links](#useful-links)
 
 ## BUAD 512A: Probability and Statistics with R
 M1: Introduction to R\
