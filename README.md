@@ -59,8 +59,8 @@ M5: Time Series II – The Benchmarks\
 M6: Time Series III – The ETS Model\
 M7: Time Series IV – The ARIMA Model\
 
-**Languages:** \
-**Tools:**
+**Languages:** R\
+**Tools:** RStudio, tidyverse
 
 ## BUAD 5122: Machine Learning and Predictive Analytics
 M1: Introduction to Machine Learning\
@@ -71,8 +71,8 @@ M5: Tree-Based Methods\
 M6: Support Vector Machines\
 M7: Unsupervised Learning
 
-**Languages:** \
-**Tools:**
+**Languages:** R\
+**Tools:** RStudio
 
 ## BUAD 5772: Databases and Data Warehousing
 M1: Database Requirements and Entity-Relationship Modeling\
@@ -83,8 +83,8 @@ M5: Advanced SQL\
 M6: Data Warehouse Concepts and Dimensional Modeling\
 M7: Extract, Transform, and Load (ETL)
 
-**Languages:** \
-**Tools:**
+**Languages:** SQL\
+**Tools:** ERDPlus, Alteryx, MySQL
 
 ## BUAD 5132: Big Data and Cloud Computing Technologies
 M1: Introduction to  Big Data and MapReduce\
@@ -95,8 +95,8 @@ M5: SparkSQL\
 M6: Cloud Computing\
 M7: Big Data Applications on Cloud
 
-**Languages:** \
-**Tools:**
+**Languages:** Python \
+**Tools:** GCP, MRJOB, PySpark, Spyder, Anaconda
 
 ## BUAD 5092: Optimization and Prescriptive Analytics
 M1: Optimization Modeling\
@@ -107,8 +107,8 @@ M5: Optimization with Integer Variables\
 M6: Nonlinear Optimization\
 M7: Heuristic Approximation\
 
-**Languages:** \
-**Tools:**
+**Languages:** Python\
+**Tools:** Solver, Gurobi, Pandoc, MikTeX, VS Code
 
 
 ## BUAD 5802: Artificial Intelligence
