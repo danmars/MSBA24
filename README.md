@@ -90,6 +90,7 @@ M7: Heuristic Approximation
 ## BUAD 5802: Artificial Intelligence
 **Languages:** Python\
 **Tools:**  TensorFlow, Keras API, Google Colab, Numpy, Pandas\
+
 M1: AI Overview and Deep Learning for Regression\
 M2: Deep Learning for Classification\
 M3: Deep Learning for Vision\
