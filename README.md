@@ -95,8 +95,8 @@ M5: Recommenders and Model Tuning\
 M6: Reinforcement Learning\
 M7: Explainability, Responsibility, and Final Deliverables
 
-Languages: Python\
-Libraries:  TensorFlow, Keras API\
+**Languages:** Python\
+**Tools:**  TensorFlow, Keras API, Google Colab, Numpy, Pandas
 
 ## BUAD 5762: Capstone Project
 
