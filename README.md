@@ -40,60 +40,61 @@ M6: Data Interpretation, Accessibility, and Effective Presentations\
 M7: Ethical Issues of Business Analytics
 
 ## BUAD 5052: Decision Modeling
-M1: Decisions Under Uncertainty
-M2: Simulation I – The Tools
-M3: Simulation II – The Business Application
-M4: Time Series  I – The Tools
-M5: Time Series II – The Benchmarks
-M6: Time Series III – The ETS Model
-M7: Time Series IV – The ARIMA Model
+M1: Decisions Under Uncertainty\
+M2: Simulation I – The Tools\
+M3: Simulation II – The Business Application\
+M4: Time Series  I – The Tools\
+M5: Time Series II – The Benchmarks\
+M6: Time Series III – The ETS Model\
+M7: Time Series IV – The ARIMA Model\
 
 ## BUAD 5122: Machine Learning and Predictive Analytics
-M1: Introduction to Machine Learning
-M2: Linear Regression
-M3: Logistic Regression
-M4: Cross-Validation, Bootstrap, and Linear Model Selection
-M5: Tree-Based Methods
-M6: Support Vector Machines
+M1: Introduction to Machine Learning\
+M2: Linear Regression\
+M3: Logistic Regression\
+M4: Cross-Validation, Bootstrap, and Linear Model Selection\
+M5: Tree-Based Methods\
+M6: Support Vector Machines\
 M7: Unsupervised Learning
 
 ## BUAD 5772: Databases and Data Warehousing
-M1: Database Requirements and Entity-Relationship Modeling
-M2: Relational Database Modeling and Implementation
-M3: Introduction to SQL
-M4: SQL for Data Science
-M5: Advanced SQL
-M6: Data Warehouse Concepts and Dimensional Modeling
+M1: Database Requirements and Entity-Relationship Modeling\
+M2: Relational Database Modeling and Implementation\
+M3: Introduction to SQL\
+M4: SQL for Data Science\
+M5: Advanced SQL\
+M6: Data Warehouse Concepts and Dimensional Modeling\
 M7: Extract, Transform, and Load (ETL)
 
 ## BUAD 5132: Big Data and Cloud Computing Technologies
-M1: Introduction to  Big Data and MapReduce
-M2: MapReduce Applications
-M3: Spark
-M4: Spark Applications
-M5: SparkSQL
-M6: Cloud Computing
+M1: Introduction to  Big Data and MapReduce\
+M2: MapReduce Applications\
+M3: Spark\
+M4: Spark Applications\
+M5: SparkSQL\
+M6: Cloud Computing\
 M7: Big Data Applications on Cloud
 
 ## BUAD 5092: Optimization and Prescriptive Analytics
-M1: Optimization Modeling
-M2: Linear Optimization I
-M3: Linear Optimization II
-M4: Network Optimization
-M5: Optimization with Integer Variables
-M6: Nonlinear Optimization
+M1: Optimization Modeling\
+M2: Linear Optimization I\
+M3: Linear Optimization II\
+M4: Network Optimization\
+M5: Optimization with Integer Variables\
+M6: Nonlinear Optimization\
 M7: Heuristic Approximation
 
 ## BUAD 5802: Artificial Intelligence
+M1: AI Overview and Deep Learning for Regression\
+M2: Deep Learning for Classification\
+M3: Deep Learning for Vision\
+M4: Deep Learning for Language\
+M5: Recommenders and Model Tuning\
+M6: Reinforcement Learning\
+M7: Explainability, Responsibility, and Final Deliverables
 
 ## BUAD 5762: Capstone Project
-M1: AI Overview and Deep Learning for Regression
-M2: Deep Learning for Classification
-M3: Deep Learning for Vision
-M4: Deep Learning for Language
-M5: Recommenders and Model Tuning
-M6: Reinforcement Learning
-M7: Explainability, Responsibility,  and Final Deliverables
+
 
 
 
