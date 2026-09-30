@@ -21,7 +21,11 @@ M3: Data Visualization\
 M4: Probabilities\
 M5: Hypothesis Testing\
 M6: ANOVA Testing\
-M7: Correlation and Regression
+M7: Correlation and Regression\
+
+**Languages:** \
+**Tools:**
+
 
 ## BUAD 512B: Business Modeling with Python
 M1: Python Basics\
@@ -30,7 +34,10 @@ M3: Input and Output\
 M4: Data Wrangling\
 M5: Introduction to Descriptive Analytics\
 M6: Introduction to Predictive Analytics\
-M7: Introduction to Prescriptive Analytics
+M7: Introduction to Prescriptive Analytics\
+
+**Languages:** \
+**Tools:**
 
 ## BUAD 5112: Competing Through Business Analytics
 M1: Business Analytics and Strategy\
@@ -39,7 +46,10 @@ M3: Internet Data Acquisition\
 M4: Visualization Quality\
 M5: Business Intelligence\
 M6: Data Interpretation, Accessibility, and Effective Presentations\
-M7: Ethical Issues of Business Analytics
+M7: Ethical Issues of Business Analytics\
+
+**Languages:** \
+**Tools:**
 
 ## BUAD 5052: Decision Modeling
 M1: Decisions Under Uncertainty\
@@ -50,6 +60,9 @@ M5: Time Series II – The Benchmarks\
 M6: Time Series III – The ETS Model\
 M7: Time Series IV – The ARIMA Model\
 
+**Languages:** \
+**Tools:**
+
 ## BUAD 5122: Machine Learning and Predictive Analytics
 M1: Introduction to Machine Learning\
 M2: Linear Regression\
@@ -58,6 +71,9 @@ M4: Cross-Validation, Bootstrap, and Linear Model Selection\
 M5: Tree-Based Methods\
 M6: Support Vector Machines\
 M7: Unsupervised Learning
+
+**Languages:** \
+**Tools:**
 
 ## BUAD 5772: Databases and Data Warehousing
 M1: Database Requirements and Entity-Relationship Modeling\
@@ -68,6 +84,9 @@ M5: Advanced SQL\
 M6: Data Warehouse Concepts and Dimensional Modeling\
 M7: Extract, Transform, and Load (ETL)
 
+**Languages:** \
+**Tools:**
+
 ## BUAD 5132: Big Data and Cloud Computing Technologies
 M1: Introduction to  Big Data and MapReduce\
 M2: MapReduce Applications\
@@ -77,6 +96,9 @@ M5: SparkSQL\
 M6: Cloud Computing\
 M7: Big Data Applications on Cloud
 
+**Languages:** \
+**Tools:**
+
 ## BUAD 5092: Optimization and Prescriptive Analytics
 M1: Optimization Modeling\
 M2: Linear Optimization I\
@@ -84,7 +106,10 @@ M3: Linear Optimization II\
 M4: Network Optimization\
 M5: Optimization with Integer Variables\
 M6: Nonlinear Optimization\
-M7: Heuristic Approximation
+M7: Heuristic Approximation\
+
+**Languages:** \
+**Tools:**
 
 
 ## BUAD 5802: Artificial Intelligence
@@ -97,7 +122,7 @@ M6: Reinforcement Learning\
 M7: Explainability, Responsibility, and Final Deliverables\
 
 **Languages:** Python\
-**Tools:**  TensorFlow, Keras API, Google Colab, Numpy, Pandas\
+**Tools:**  TensorFlow, Keras API, Google Colab, Numpy, Pandas
 
 ## BUAD 5762: Capstone Project
 
