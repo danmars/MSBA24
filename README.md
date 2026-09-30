@@ -86,6 +86,7 @@ M5: Optimization with Integer Variables\
 M6: Nonlinear Optimization\
 M7: Heuristic Approximation
 
+
 ## BUAD 5802: Artificial Intelligence
 M1: AI Overview and Deep Learning for Regression\
 M2: Deep Learning for Classification\
@@ -94,7 +95,6 @@ M4: Deep Learning for Language\
 M5: Recommenders and Model Tuning\
 M6: Reinforcement Learning\
 M7: Explainability, Responsibility, and Final Deliverables
-
 **Languages:** Python\
 **Tools:**  TensorFlow, Keras API, Google Colab, Numpy, Pandas
 
