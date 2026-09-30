@@ -21,11 +21,10 @@ M3: Data Visualization\
 M4: Probabilities\
 M5: Hypothesis Testing\
 M6: ANOVA Testing\
-M7: Correlation and Regression\
+M7: Correlation and Regression
 
-**Languages:** \
-**Tools:**
-
+**Languages:** R\
+**Tools:** RStudio, RMarkdown
 
 ## BUAD 512B: Business Modeling with Python
 M1: Python Basics\
@@ -36,8 +35,8 @@ M5: Introduction to Descriptive Analytics\
 M6: Introduction to Predictive Analytics\
 M7: Introduction to Prescriptive Analytics\
 
-**Languages:** \
-**Tools:**
+**Languages:** Python\
+**Tools:** Anaconda, Spyder, Jupyter
 
 ## BUAD 5112: Competing Through Business Analytics
 M1: Business Analytics and Strategy\
@@ -48,8 +47,8 @@ M5: Business Intelligence\
 M6: Data Interpretation, Accessibility, and Effective Presentations\
 M7: Ethical Issues of Business Analytics\
 
-**Languages:** \
-**Tools:**
+**Languages:** Python\
+**Tools:** Anaconda, Jupyter, Tableau
 
 ## BUAD 5052: Decision Modeling
 M1: Decisions Under Uncertainty\
