@@ -2,15 +2,15 @@
 
 ## Course Overview:
 [BUAD 512A: Probability and Statistics with R](#buad-512a-probability-and-statistics-with-r) \
-BUAD 512B: Business Modeling with Python\
-BUAD 5112: Competing Through Business Analytics\
-BUAD 5052: Decision Modeling\
-BUAD 5122: Machine Learning and Predictive Analytics\
-BUAD 5772: Databases and Data Warehousing\
-BUAD 5132: Big Data and Cloud Computing Technologies\
-BUAD 5092: Optimization and Prescriptive Analytics\
-BUAD 5802: Artificial Intelligence\
-BUAD 5762: Capstone Project
+[BUAD 512B: Business Modeling with Python](#buad-512b-business-modeling-with-python)\
+[BUAD 5112: Competing Through Business Analytics](#buad-5112-competing-through-business-analytics)\
+[BUAD 5052: Decision Modeling](#buad-5052-decision-modeling)\
+[BUAD 5122: Machine Learning and Predictive Analytics](#buad-5122-machine-learning-and-predictive-analytics)\
+[BUAD 5772: Databases and Data Warehousing](#buad-5772-databases-and-data-warehousing)\
+[BUAD 5132: Big Data and Cloud Computing Technologies](#buad-5132-big-data-and-cloud-computing-technologies)\
+[BUAD 5092: Optimization and Prescriptive Analytics](#buad-5092-optimization-and-prescriptive-analytics)\
+[BUAD 5802: Artificial Intelligence](#buad-5802-artificial-intelligence)\
+[BUAD 5762: Capstone Project](#buad-5762-capstone-project)
 
 ## BUAD 512A: Probability and Statistics with R
 M1: Introduction to R\
