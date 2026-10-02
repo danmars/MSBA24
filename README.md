@@ -150,3 +150,7 @@ M7: Explainability, Responsibility, and Final Deliverables\
 
 ### Statistics:
 - https://jagelves.github.io/BusinessStats/
+
+### Neural Networks:
+- https://alexlenail.me/NN-SVG/index.html/
+- https://playground.tensorflow.org/
